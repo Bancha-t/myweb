@@ -39,7 +39,7 @@ header img {
 }
 
 .search-bar {
-    background-color: #f0e6f4;
+    background-color: #E2C9EF;
     padding: 10px;
     display: flex;
     justify-content: center; 
@@ -47,7 +47,7 @@ header img {
     gap: 450px; 
 }
 
-.search-bar img {
+.search-bar img {   
     width: 30px;
     height: auto;
 }
@@ -76,7 +76,7 @@ header img {
     align-items: flex-start;
     padding: 20px;
     max-width: 700px;
-    margin: 0 auto;
+    margin: 20px auto;
 }
 
 .book-image {
@@ -87,6 +87,28 @@ header img {
 .book-image img {
     width: 100%;
     height: auto;
+}
+
+.info-content { 
+    margin: 20px auto;
+    background-color: #f0e6f4;
+    border-radius: 50px;    
+    padding: 20px;
+    padding-left: 50px; 
+    padding-right: 50px; 
+    display: flex;
+    justify-content: space-between;
+    max-width: 80vw;
+    gap: 10px;
+}
+
+.book-info, .product-details {
+    flex: 1; 
+    max-width: 100%; 
+}
+
+.light-text {
+    font-weight: normal;
 }
 
 .book-details {
@@ -101,12 +123,13 @@ header img {
 }
 
 .quantity-btn {
-    width: 30px;
-    height: 30px;
-    font-size: 1.2em;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
+    background-color: white;
+    color: #385729;
+    border-radius: 20px;
+    padding: 5px 15px;
+    border: 2px solid #385729;
     cursor: pointer;
+    margin: 0;
 }
 
 .quantity-input {
@@ -114,6 +137,12 @@ header img {
     text-align: center;
     margin: 0 10px;
     padding: 5px;
+    border-radius: 20px;   
+    margin: 0;
+}
+
+.quantity-info {
+    margin-left: 20px;
 }
 
 .action-buttons button {
@@ -124,13 +153,23 @@ header img {
 }
 
 .buy-now {
-    background-color: #4CAF50;
+    background-color: #385729;
+    border-radius: 20px;
     color: white;
+    padding: 10px 20px;
+    border: 2px solid #385729;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .add-to-cart {
-    background-color: #008CBA;
-    color: white;
+    background-color: white;
+    border-radius: 20px;
+    color: #385729;
+    padding: 10px 20px;
+    border: 2px solid #385729;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
 }
 
 .related-products {
