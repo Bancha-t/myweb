@@ -1,0 +1,154 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #ffffff;
+    padding: 15px 70px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header a {
+    text-decoration: none; 
+    color: #2c5234; 
+}
+
+header img {
+    width: 30px; 
+    height: auto;
+}
+
+.logo {
+    font-size: 35px;
+    font-weight: bold;
+    color: #2c5234;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-login {
+    padding: auto;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.search-bar {
+    background-color: #f0e6f4;
+    padding: 10px;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    gap: 450px; 
+}
+
+.search-bar img {
+    width: 30px;
+    height: auto;
+}
+
+.search-bar input {
+    width: 50%;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+}
+
+.icon-shopping {
+    padding: 10px;
+    display: flex;
+    gap: 10px; 
+}
+
+.icon-shopping img {
+    width: 27px;
+    height: auto;
+}
+
+.main-content {
+    display: flex;
+    align-items: flex-start;
+    padding: 20px;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.book-image {
+    flex: 0 0 300px;
+    margin-right: 40px;
+}
+
+.book-image img {
+    width: 100%;
+    height: auto;
+}
+
+.book-details {
+    flex: 2;
+    padding-left: 20px;
+}
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.quantity-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 1.2em;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.quantity-input {
+    width: 50px;
+    text-align: center;
+    margin: 0 10px;
+    padding: 5px;
+}
+
+.action-buttons button {
+    padding: 10px 20px;
+    margin-right: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.buy-now {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.add-to-cart {
+    background-color: #008CBA;
+    color: white;
+}
+
+.related-products {
+    text-align: center;
+    padding: 20px;
+}
+
+.related-products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.product-card {
+    text-align: center;
+}
+
+.product-card img {
+    max-width: 60%;
+    height: auto;
+}
