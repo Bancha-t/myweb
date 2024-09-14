@@ -1,0 +1,163 @@
+*{
+    text-decoration: none; 
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #ffffff;
+    padding: 15px 70px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header a {
+    text-decoration: none; 
+    font-size: 25px;
+    color: #2c5234; 
+}
+
+
+header img {
+    width: 50px; 
+    height: auto;
+}
+
+
+.logo {
+    font-size: 35px;
+    font-weight: bold;
+    color: #2c5234;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-login {
+    padding: auto;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.search-bar {
+    background-color: #E2C9EF;
+    padding: 10px;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    gap: 23vw; 
+}
+
+.search-bar img {
+    width: 30px;
+    height: auto;
+}
+
+.search-bar input {
+    width: 57%;
+    padding: 10px 30px;
+    border: none;
+    border-radius: 30px;
+    font-size: 21px;
+}
+
+.icon-shopping {
+    padding: 10px;
+    display: flex;
+    gap: 10px; 
+}
+
+.icon-shopping img {
+    width: 37px;
+    height: auto;
+}
+
+
+.banner {
+    background-color: #ffffff;
+    padding: 20px;
+    text-align: center;
+}
+
+.banner img{
+    width: 70%;
+    height: auto;
+}
+
+.book-section {
+    padding: 20px 4vw;
+    font-size: 17px;
+}
+
+.book-section a{
+    font-size: 24spx;
+    color: black;
+}
+
+
+.book-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+}
+
+.book-item {
+    text-align: center;
+}
+
+.book-item img {
+    max-width: 100%;
+    height: auto;
+}
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    opacity: 0;
+    transition: opacity 0.5s;
+    z-index: 1001;
+    pointer-events: none;
+}
+
+.overlay.active {   
+    opacity: 0.5;
+    pointer-events: auto;
+}
+
+.overlay-content {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 300px;
+    height: 100%;
+    background: #ffffff;
+    transition: right 0.3s;
+    z-index: 1002;
+    padding: 20px;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.overlay-content.active {
+    right: 0;
+}
+
+.cart-icon {
+    cursor: pointer;
+}
