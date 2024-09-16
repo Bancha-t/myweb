@@ -145,7 +145,7 @@ const Login: React.FC = () => {
       fontWeight: 100,
       lineHeight: '20px',
       letterSpacing: '0.5px',
-      margin: '30px 0 5px',
+      margin: '30px 0 30px',
     },
     input: {
       background: '#eee',
@@ -179,6 +179,12 @@ const Login: React.FC = () => {
     ghostButton: {
       background: 'transparent',
       border: '2px solid #fff',
+    },
+    fab: {
+      borderRadius: '40px',      
+      overflow: 'hidden',
+      padding: '0'
+
     },
     overlayContainer: {
       position: 'absolute',
@@ -224,12 +230,19 @@ const Login: React.FC = () => {
   };
 
   return (
-    <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
+    <GoogleOAuthProvider clientId="GOOGLE_OAUTH_CLIENT_ID">
       <div style={styles.body}>
         <div style={styles.container}>
           <div style={styles.signUp}>
             <form style={styles.form} onSubmit={handleSubmit}>
               <h1 style={styles.h1}>สร้างบัญชีใหม่</h1>
+              <div style={styles.socialContainer}>
+                <GoogleLogin 
+                  onSuccess={(response) => console.log('Google Login Success:', response)}
+                  onError={() => console.log('Google Login Failed')}
+                  containerProps={{ style: styles.fab }}
+                />
+              </div>
               <input
                 style={styles.input}
                 type="text"
@@ -265,6 +278,13 @@ const Login: React.FC = () => {
           <div style={styles.signIn}>
             <form style={styles.form} onSubmit={handleSubmit}>
               <h1 style={styles.h1}>เข้าสู่ระบบ</h1>
+              <div style={styles.socialContainer}>
+                <GoogleLogin
+                  onSuccess={(response) => console.log('Google Login Success:', response)}
+                  onError={() => console.log('Google Login Failed')}
+                  containerProps={{ style: styles.fab }}
+                />
+              </div>
               <input
                 style={styles.input}
                 type="email"
@@ -312,10 +332,6 @@ const Login: React.FC = () => {
               </div>
             </div>
           </div>
-          <GoogleLogin
-            onSuccess={handleOAuthSuccess}
-            onError={handleOAuthFailure}
-          />
         </div>
       </div>
     </GoogleOAuthProvider>

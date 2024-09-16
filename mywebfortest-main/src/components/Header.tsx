@@ -18,7 +18,6 @@ const Header: React.FC = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     setUsername(null);
-    // อาจเพิ่มการเปลี่ยนเส้นทางไปยังหน้าแรกหรือหน้าอื่นหลังจากออกจากระบบ
   };
 
   return (
