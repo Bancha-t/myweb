@@ -4,11 +4,17 @@ import Banner from '../../components/Banner';
 import SearchBar from '../../components/SearchBar';
 import Header from '../../components/Header';
 import Cart from '../../components/Cart';
-import styles from './Home.module.css';  // Import CSS module
+
+const homeContainerStyle: React.CSSProperties = {
+  width: '100%',
+  minHeight: '100vh',
+  display: 'flex',
+  flexDirection: 'column'
+};
 
 function Home() {
   return (
-    <div className={styles.homeContainer}>      
+    <div style={homeContainerStyle}>
       <Header />
       <SearchBar />
       <Banner />

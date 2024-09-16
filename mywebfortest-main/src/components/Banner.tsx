@@ -20,6 +20,7 @@ const bannerStyle: React.CSSProperties = {
 const imgStyle: React.CSSProperties = {
   maxWidth: '100%', 
   height: 'auto',
+  
 };
 
 export default Banner;

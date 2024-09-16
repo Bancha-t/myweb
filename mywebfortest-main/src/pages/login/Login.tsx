@@ -1,4 +1,5 @@
 import React, { useState, CSSProperties } from 'react';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
 interface FormData {
   email: string;
@@ -42,18 +43,50 @@ const Login: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log('Sign Up:', formData);
+      try {
+        const endpoint = isRightPanelActive ? '/signup' : '/signin';
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+            ...(isRightPanelActive && { name: formData.name })
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (isRightPanelActive) {
+          console.log('Sign Up Success:', data);
+        } else {
+          if (data.success) {
+            console.log('Sign In Success:', data.user.name);
+          } else {
+            console.log('Sign In Failed:', data.message);
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
     }
   };
 
-  const handleSignIn = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validateForm()) {
-      console.log('Sign In:', formData);
-    }
+  const handleOAuthSuccess = (response: any) => {
+    console.log('Google OAuth Success:', response);
+    // ส่งโทเคนไปเซิร์ฟเวอร์เพื่อรับ JWT และข้อมูลผู้ใช้
+  };
+
+  const handleOAuthFailure = (error: any) => {
+    console.error('Google OAuth Failed:', error);
   };
 
   const styles: { [key: string]: CSSProperties } = {
@@ -62,7 +95,6 @@ const Login: React.FC = () => {
       display: 'flex',
       justifyContent: 'center',
       flexDirection: 'column',
-      background: '#f6f5f7',
       fontFamily: 'Arial, sans-serif',
       minHeight: '100%',
       margin: '10%',
@@ -109,11 +141,11 @@ const Login: React.FC = () => {
       textAlign: 'center',
     },
     h1: {
-      fontSize: '20px',
+      fontSize: '25px',
       fontWeight: 100,
       lineHeight: '20px',
       letterSpacing: '0.5px',
-      margin: '15px 0 20px',
+      margin: '30px 0 5px',
     },
     input: {
       background: '#eee',
@@ -124,15 +156,10 @@ const Login: React.FC = () => {
       border: 'none',
       outline: 'none',
     },
-    a: {
-      color: '#333',
-      fontSize: '14px',
-      textDecoration: 'none',
-      margin: '15px 0',
-    },
-    fab: {
-      width: '300px',
-      height: 'auto',
+    error: {
+      color: 'red',
+      fontSize: '12px',
+      marginTop: '5px',
     },
     button: {
       color: '#fff',
@@ -180,7 +207,6 @@ const Login: React.FC = () => {
       alignItems: 'center',
       justifyContent: 'center',
       flexDirection: 'column',
-      padding: '0 50px',
       textAlign: 'center',
       top: 0,
       height: '100%',
@@ -195,113 +221,104 @@ const Login: React.FC = () => {
       right: 0,
       transform: isRightPanelActive ? 'translateX(20%)' : 'translateX(0)',
     },
-    socialContainer: {
-      margin: '20px 0',
-    },
-    socialLink: {
-      height: '40px',
-      width: '40px',
-      margin: '0 5px',
-      display: 'inline-flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    error: {
-      color: 'red',
-      fontSize: '12px',
-      marginTop: '5px',
-    },
   };
 
   return (
-    <div style={styles.body}>
-      <div style={styles.container}>
-        <div style={styles.signUp}>
-          <form style={styles.form} onSubmit={handleSignUp}>
-            <h1 style={styles.h1}>สร้างบัญชีใหม่</h1>
-            <div style={styles.socialContainer}>
-              <a href="#" style={styles.socialLink}>
-                <img src="/api/placeholder/300/300" alt="google" style={styles.fab} />
-              </a>
-            </div>
-            <span>หรือสมัครสมาชิกด้วย Email</span>
-            <input
-              style={styles.input}
-              type="text"
-              placeholder="Name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-            />
-            {errors.name && <span style={styles.error}>{errors.name}</span>}
-            <input
-              style={styles.input}
-              type="email"
-              placeholder="Email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-            />
-            {errors.email && <span style={styles.error}>{errors.email}</span>}
-            <input
-              style={styles.input}
-              type="password"
-              placeholder="Password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-            />
-            {errors.password && <span style={styles.error}>{errors.password}</span>}
-            <button style={styles.button} type="submit">สมัครสมาชิก</button>
-          </form>
-        </div>
-        <div style={styles.signIn}>
-          <form style={styles.form} onSubmit={handleSignIn}>
-            <h1 style={styles.h1}>หรือเข้าสู่ระบบด้วย Email ของคุณ</h1>
-            <div style={styles.socialContainer}>
-              <a href="#" style={styles.socialLink}>
-                <img src="/api/placeholder/300/300" alt="google" style={styles.fab} />
-              </a>
-            </div>
-            <span>เข้าสู่ระบบด้วย Email ของคุณ</span>
-            <input
-              style={styles.input}
-              type="email"
-              placeholder="Email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-            />
-            {errors.email && <span style={styles.error}>{errors.email}</span>}
-            <input
-              style={styles.input}
-              type="password"
-              placeholder="Password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-            />
-            {errors.password && <span style={styles.error}>{errors.password}</span>}
-            <a href="#" style={styles.a}>ลืมรหัสผ่าน</a>
-            <button style={styles.button} type="submit">เข้าสู่ระบบ</button>
-          </form>
-        </div>
-        <div style={styles.overlayContainer}>
-          <div style={styles.overlay}>
-            <div style={{...styles.overlayPanel, ...styles.overlayLeft}}>
-              <h1 style={styles.h1}>ยินดีตอนรับกลับนะเพื่อน</h1>
-              <p>เข้าสู่ระบบเพื่อเชื่อมต่อกับเรา</p>
-              <button style={{...styles.button, ...styles.ghostButton}} onClick={() => setIsRightPanelActive(false)}>เข้าสู่ระบบ</button>
-            </div>
-            <div style={{...styles.overlayPanel, ...styles.overlayRight}}>
-              <h1 style={styles.h1}>สวัสดีเพื่อน</h1>
-              <p>สมัครสมาชิกและเริ่มการเดินทางกับเรา</p>
-              <button style={{...styles.button, ...styles.ghostButton}} onClick={() => setIsRightPanelActive(true)}>สร้างบัญชีใหม่</button>
+    <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
+      <div style={styles.body}>
+        <div style={styles.container}>
+          <div style={styles.signUp}>
+            <form style={styles.form} onSubmit={handleSubmit}>
+              <h1 style={styles.h1}>สร้างบัญชีใหม่</h1>
+              <input
+                style={styles.input}
+                type="text"
+                placeholder="Name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+              />
+              {errors.name && <span style={styles.error}>{errors.name}</span>}
+              <input
+                style={styles.input}
+                type="email"
+                placeholder="Email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+              />
+              {errors.email && <span style={styles.error}>{errors.email}</span>}
+              <input
+                style={styles.input}
+                type="password"
+                placeholder="Password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+              />
+              {errors.password && <span style={styles.error}>{errors.password}</span>}
+              <button style={styles.button} type="submit">
+                สมัครสมาชิก
+              </button>
+            </form>
+          </div>
+          <div style={styles.signIn}>
+            <form style={styles.form} onSubmit={handleSubmit}>
+              <h1 style={styles.h1}>เข้าสู่ระบบ</h1>
+              <input
+                style={styles.input}
+                type="email"
+                placeholder="Email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+              />
+              {errors.email && <span style={styles.error}>{errors.email}</span>}
+              <input
+                style={styles.input}
+                type="password"
+                placeholder="Password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+              />
+              {errors.password && <span style={styles.error}>{errors.password}</span>}
+              <button style={styles.button} type="submit">
+                เข้าสู่ระบบ
+              </button>
+            </form>
+          </div>
+          <div style={styles.overlayContainer}>
+            <div style={styles.overlay}>
+              <div style={{ ...styles.overlayPanel, ...styles.overlayLeft }}>
+                <h1 style={styles.h1}>ยินดีตอนรับกลับนะเพื่อน</h1>
+                <p>เข้าสู่ระบบเพื่อเชื่อมต่อกับเรา</p>
+                <button
+                  style={{ ...styles.button, ...styles.ghostButton }}
+                  onClick={() => setIsRightPanelActive(false)}
+                >
+                  เข้าสู่ระบบ
+                </button>
+              </div>
+              <div style={{ ...styles.overlayPanel, ...styles.overlayRight }}>
+                <h1 style={styles.h1}>สวัสดีเพื่อน</h1>
+                <p>สมัครสมาชิกและเริ่มการเดินทางกับเรา</p>
+                <button
+                  style={{ ...styles.button, ...styles.ghostButton }}
+                  onClick={() => setIsRightPanelActive(true)}
+                >
+                  สร้างบัญชีใหม่
+                </button>
+              </div>
             </div>
           </div>
+          <GoogleLogin
+            onSuccess={handleOAuthSuccess}
+            onError={handleOAuthFailure}
+          />
         </div>
       </div>
-    </div>
+    </GoogleOAuthProvider>
   );
 };
 

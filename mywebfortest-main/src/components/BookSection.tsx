@@ -5,7 +5,7 @@ interface Book {
   id: number;
   title: string;
   coverImage: string;
-  price: string; // เปลี่ยนเป็น string เนื่องจาก price เป็น numeric ในฐานข้อมูล
+  price: string;
   description: string;
   stocksAvailable: number;
   sold: number;
@@ -36,10 +36,9 @@ const BookSection: React.FC<BookSectionProps> = ({ title, method }) => {
         throw new Error('Failed to fetch books');
       }
       const data = await response.json();
-      setBooks(data.slice(0, 5)); // จำกัดที่ 5 เล่มสำหรับแต่ละส่วน
+      setBooks(data.slice(0, 5));
     } catch (error) {
       console.error('Error fetching books:', error);
-      setError('ไม่สามารถโหลดข้อมูลหนังสือได้ กรุณาลองใหม่อีกครั้ง');
     } finally {
       setIsLoading(false);
     }
@@ -101,6 +100,37 @@ const bookCategoryStyle: React.CSSProperties = {
   fontSize: '12px',
   color: '#666',
   marginTop: '5px',
+};
+
+const bookItemStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  border: '1px solid #ccc',
+  padding: '10px',
+  borderRadius: '8px',
+  backgroundColor: '#f9f9f9',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+};
+
+const bookImageStyle: React.CSSProperties = {
+  width: '150px',
+  height: '200px',
+  objectFit: 'cover',
+  marginBottom: '10px',
+};
+
+const bookTitleStyle: React.CSSProperties = {
+  fontSize: '16px',
+  fontWeight: 'bold',
+  textAlign: 'center',
+  margin: '10px 0',
+  color: '#333',
+};
+
+const bookPriceStyle: React.CSSProperties = {
+  fontSize: '14px',
+  color: '#555',
 };
 
 export default BookSection;
