@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ani Meb - รายการที่ชอบ</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        .header {
+            background-color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .logo {
+            color: #2e7d32;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-info img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+        .search-bar {
+            background-color: #e6e6fa;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .search-input {
+            flex-grow: 1;
+            margin-right: 20px;
+            padding: 10px;
+            border: none;
+            border-radius: 20px;
+        }
+        .icons {
+            display: flex;
+            gap: 20px;
+        }
+        .main-content {
+            display: flex;
+            margin-top: 20px;
+        }
+        .sidebar {
+            width: 250px;
+            padding: 20px;
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .user-profile img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .menu-item {
+            margin-bottom: 10px;
+            color: #333;
+            cursor: pointer;
+        }
+        .menu-item:hover {
+            text-decoration: underline;
+        }
+        .sub-menu {
+            margin-left: 20px;
+            display: none;
+        }
+        .sub-menu.show {
+            display: block;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .product-card {
+            display: flex;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .product-image {
+            width: 100px;
+            height: 150px;
+            object-fit: cover;
+            margin-right: 20px;
+        }
+        .product-details {
+            flex-grow: 1;
+        }
+        .buy-button {
+            background-color: #e6e6fa;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">Ani Meb</div>
+        <div class="user-info">
+            goodboy
+            <img src="/api/placeholder/30/30" alt="User Avatar">
+        </div>
+    </header>
+    <div class="search-bar">
+        <input type="text" class="search-input" placeholder="ค้นหา">
+        <div class="icons">
+            <span>🔔</span>
+            <span>❤️</span>
+            <span>🛒</span>
+        </div>
+    </div>
+    <div class="main-content">
+        <aside class="sidebar">
+            <div class="user-profile">
+                <img src="/api/placeholder/50/50" alt="User Avatar">
+                <div>
+                    <strong>goodboy</strong>
+                    <div>แก้ไขข้อมูลส่วนตัว</div>
+                </div>
+            </div>
+            <div class="menu-item" onclick="toggleSubMenu('account-submenu')">จัดการบัญชีของฉัน</div>
+            <div class="sub-menu" id="account-submenu">
+                <div class="menu-item">ข้อมูลส่วนตัว</div>
+                <div class="menu-item">สมุดที่อยู่</div>
+            </div>
+            <div class="menu-item" onclick="toggleSubMenu('notification-submenu')">การแจ้งเตือน</div>  
+            <div class="sub-menu" id="notification-submenu">
+                <div class="menu-item">รายการที่เคยซื้อ</div>
+                <div class="menu-item">การเปลี่ยนสินค้า</div>
+                <div class="menu-item">การคืนสินค้า</div>
+                <div class="menu-item">การยกเลิกสินค้า</div>
+            </div>
+            <div class="menu-item">รายการที่ชอบ</div>
+        </aside>
+        <main class="content">
+            <h2>รายการที่ชอบ</h2>
+            <div class="product-card">
+                <img src="/api/placeholder/100/150" alt="Alya Book Cover" class="product-image">
+                <div class="product-details">
+                    <h3>Alya sometimes hides her feelings in russian 1</h3>
+                    <p>ผู้แต่ง : ชันชันชิน</p>
+                    <p>ราคา : ฿ 650.00</p>
+                </div>
+                <button class="buy-button">หยิบใส่รถเข็น</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleSubMenu(id) {
+            const subMenu = document.getElementById(id);
+            subMenu.classList.toggle('show');
+        }
+    </script>
+</body>
+</html>
