@@ -330,4 +330,3 @@ const styles: { [key: string]: CSSProperties } = {
   },
 };
 
-
