@@ -4,29 +4,32 @@ interface CartProps {
   isOpen: boolean;
   toggleCart: () => void;
   items: { id: number; name: string; price: number; quantity: number }[];
+  updateQuantity: (id: number, change: number) => void; // ฟังก์ชันสำหรับเพิ่ม/ลดจำนวนสินค้า
 }
 
-const Cart: React.FC<CartProps> = ({ isOpen, toggleCart, items }) => {
+const Cart: React.FC<CartProps> = ({ isOpen, toggleCart, items, updateQuantity }) => {
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+  const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
   return (
     <>
       {/* Overlay */}
-      <div
-        role="button"
-        aria-label="Close cart"
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          background: 'rgba(0, 0, 0, 0.5)',
-          opacity: isOpen ? 1 : 0,
-          visibility: isOpen ? 'visible' : 'hidden',
-          transition: 'opacity 0.3s, visibility 0.3s',
-          zIndex: 1001,
-        }}
-        onClick={toggleCart}
-      ></div>
+      {isOpen && (
+        <div
+          role="button"
+          aria-label="Close cart"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 1001,
+          }}
+          onClick={toggleCart}
+        ></div>
+      )}
       
       {/* Cart Panel */}
       <div
@@ -44,9 +47,9 @@ const Cart: React.FC<CartProps> = ({ isOpen, toggleCart, items }) => {
           overflowY: 'auto',
         }}
       >
-        <button 
+        <button
           aria-label="Close cart"
-          onClick={toggleCart} 
+          onClick={toggleCart}
           style={{
             position: 'absolute',
             top: '10px',
@@ -59,29 +62,31 @@ const Cart: React.FC<CartProps> = ({ isOpen, toggleCart, items }) => {
         >
           &times;
         </button>
-        <h2 style={{ marginBottom: '20px' }}>สินค้าในตะกร้า ({items.length} รายการ)</h2>
+        <h2 style={{ marginBottom: '20px' }}>สินค้าในตะกร้า ({totalItems} รายการ)</h2>
         {items.map((item) => (
           <div key={item.id} style={{ marginBottom: '15px', borderBottom: '1px solid #eee', paddingBottom: '15px' }}>
             <h3>{item.name}</h3>
             <p>ราคา: {item.price} บาท</p>
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <button style={buttonStyle}>-</button>
+              <button onClick={() => updateQuantity(item.id, -1)} style={buttonStyle}>-</button>
               <span style={{ margin: '0 10px' }}>{item.quantity}</span>
-              <button style={buttonStyle}>+</button>
+              <button onClick={() => updateQuantity(item.id, 1)} style={buttonStyle}>+</button>
             </div>
           </div>
         ))}
         <div style={{ marginTop: '20px' }}>
-          <strong>ราคารวม: {items.reduce((sum, item) => sum + item.price * item.quantity, 0)} บาท</strong>
+          <strong>ราคารวม: {totalPrice} บาท</strong>
         </div>
-        <button style={{
-          ...buttonStyle,
-          width: '100%',
-          marginTop: '20px',
-          padding: '10px',
-          backgroundColor: '#4CAF50',
-          color: 'white',
-        }}>
+        <button
+          style={{
+            ...buttonStyle,
+            width: '100%',
+            marginTop: '20px',
+            padding: '10px',
+            backgroundColor: '#4CAF50',
+            color: 'white',
+          }}
+        >
           สั่งสินค้า
         </button>
       </div>

@@ -1,10 +1,15 @@
-// Header.tsx
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import hamburgerIcon from '../assets/Hamburger_icon.png';
-import userbarIcon from '../assets/UserBar.png';
+import { Menu, UserRound, ShoppingCart } from 'lucide-react'; // Import ShoppingCart icon
+import Cart from './Cart'; // Import Cart component
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  isCartOpen: boolean;
+  toggleCart: () => void;
+  cartItems: { id: number; name: string; price: number; quantity: number }[];
+}
+
+const Header: React.FC<HeaderProps> = ({ isCartOpen, toggleCart, cartItems }) => {
   const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
@@ -23,10 +28,15 @@ const Header: React.FC = () => {
   return (
     <header style={headerStyle}>
       <div style={logoStyle}>
-        <img src={hamburgerIcon} alt="Hamburger icon" style={imgStyle} /> 
+        <Menu style={iconStyle} />
         Ani Meb
       </div>
       <div style={logoLoginStyle}>
+        <div style={cartContainerStyle}>
+          <ShoppingCart style={iconStyle} onClick={toggleCart} />
+          <span style={cartCountStyle}>{cartItems.length}</span>
+        </div>
+
         {username ? (
           <>
             <span style={welcomeStyle}>สวัสดี, {username}</span>
@@ -37,12 +47,15 @@ const Header: React.FC = () => {
         ) : (
           <>
             <Link to="/login" style={linkStyle}>
-              <img src={userbarIcon} alt="User icon" style={imgStyle} />
+              <UserRound style={iconStyle} />
             </Link>
             <Link to="/login" style={linkStyle}>เข้าสู่ระบบ</Link>
           </>
         )}
       </div>
+      
+      {/* เพิ่ม Cart overlay */}
+      <Cart isOpen={isCartOpen} toggleCart={toggleCart} items={cartItems} />
     </header>
   );
 };
@@ -70,14 +83,34 @@ const logoLoginStyle: React.CSSProperties = {
   gap: '10px',
 };
 
+const cartContainerStyle: React.CSSProperties = {
+  position: 'relative',
+  display: 'flex',
+  alignItems: 'center',
+  cursor: 'pointer',
+};
+
+const cartCountStyle: React.CSSProperties = {
+  position: 'absolute',
+  top: '-10px',
+  right: '-10px',
+  backgroundColor: 'red',
+  color: 'white',
+  borderRadius: '50%',
+  padding: '5px',
+  fontSize: '12px',
+};
+
 const linkStyle: React.CSSProperties = {
   textDecoration: 'none',
   color: '#2c5234',
+  fontSize: '20px',
 };
 
-const imgStyle: React.CSSProperties = {
+const iconStyle: React.CSSProperties = {
   width: '30px',
   height: 'auto',
+  color: '#2c5234',
 };
 
 const welcomeStyle: React.CSSProperties = {
