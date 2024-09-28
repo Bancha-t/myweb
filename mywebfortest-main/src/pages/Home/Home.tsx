@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import BookSection from '../../components/BookSection';
 import Banner from '../../components/Banner';
 import SearchBar from '../../components/SearchBar';
 import Header from '../../components/Header';
 import Cart from '../../components/Cart';
+import { useCart } from '../../contexts/CartContext';
 
 const homeContainerStyle: React.CSSProperties = {
   width: '100%',
@@ -13,25 +14,16 @@ const homeContainerStyle: React.CSSProperties = {
 };
 
 function Home() {
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [cartItems, setCartItems] = useState([
-    { id: 1, name: "alya sometimes hides her feelings in russian 1", price: 650, quantity: 3 },
-    { id: 2, name: "Spy x family 1", price: 95, quantity: 1 },
-    { id: 3, name: "All Tomorrows", price: 400, quantity: 1 },
-  ]);
-
-  const toggleCart = () => {
-    setIsCartOpen(!isCartOpen);
-  };
+  const { isCartOpen, toggleCart, cartItems, updateQuantity } = useCart();
 
   return (
     <div style={homeContainerStyle}>
       <Header />
-      <SearchBar onCartClick={toggleCart} />
+      <SearchBar />
       <Banner />
       <BookSection title="หนังสือขายดี" />
       <BookSection title="หนังสือมาใหม่" />
-      <Cart isOpen={isCartOpen} toggleCart={toggleCart} items={cartItems} />
+      <Cart isOpen={isCartOpen} toggleCart={toggleCart} items={cartItems} updateQuantity={updateQuantity} />
     </div>
   );
 }
