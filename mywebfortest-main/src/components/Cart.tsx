@@ -1,10 +1,17 @@
 import React from 'react';
 
+interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
 interface CartProps {
   isOpen: boolean;
   toggleCart: () => void;
-  items: { id: number; name: string; price: number; quantity: number }[];
-  updateQuantity: (id: number, change: number) => void; // ฟังก์ชันสำหรับเพิ่ม/ลดจำนวนสินค้า
+  items: CartItem[];
+  updateQuantity: (id: number, change: number) => void;
 }
 
 const Cart: React.FC<CartProps> = ({ isOpen, toggleCart, items, updateQuantity }) => {
@@ -16,89 +23,57 @@ const Cart: React.FC<CartProps> = ({ isOpen, toggleCart, items, updateQuantity }
       {/* Overlay */}
       {isOpen && (
         <div
-          role="button"
-          aria-label="Close cart"
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 1001,
-          }}
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
           onClick={toggleCart}
         ></div>
       )}
       
       {/* Cart Panel */}
       <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          right: isOpen ? 0 : '-400px',
-          width: '400px',
-          height: '100%',
-          background: '#ffffff',
-          transition: 'right 0.3s',
-          zIndex: 1002,
-          padding: '20px',
-          boxShadow: '-2px 0 5px rgba(0, 0, 0, 0.5)',
-          overflowY: 'auto',
-        }}
+        className={`fixed top-0 right-0 w-96 h-full bg-white z-50 p-6 transform transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
       >
-        <button
+        <button 
+          onClick={toggleCart} 
+          className="absolute top-4 right-4 text-2xl"
           aria-label="Close cart"
-          onClick={toggleCart}
-          style={{
-            position: 'absolute',
-            top: '10px',
-            right: '10px',
-            border: 'none',
-            background: 'none',
-            fontSize: '24px',
-            cursor: 'pointer',
-          }}
         >
           &times;
         </button>
-        <h2 style={{ marginBottom: '20px' }}>สินค้าในตะกร้า ({totalItems} รายการ)</h2>
-        {items.map((item) => (
-          <div key={item.id} style={{ marginBottom: '15px', borderBottom: '1px solid #eee', paddingBottom: '15px' }}>
-            <h3>{item.name}</h3>
-            <p>ราคา: {item.price} บาท</p>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <button onClick={() => updateQuantity(item.id, -1)} style={buttonStyle}>-</button>
-              <span style={{ margin: '0 10px' }}>{item.quantity}</span>
-              <button onClick={() => updateQuantity(item.id, 1)} style={buttonStyle}>+</button>
+        <h2 className="text-xl font-bold mb-4">สินค้าในตะกร้า ({totalItems} รายการ)</h2>
+        <div className="space-y-4">
+          {items.map((item) => (
+            <div key={item.id} className="border-b pb-4">
+              <h3 className="font-semibold">{item.name}</h3>
+              <p>ราคา: {item.price} บาท</p>
+              <div className="flex items-center mt-2">
+                <button
+                  onClick={() => updateQuantity(item.id, -1)}
+                  className="px-2 py-1 border rounded"
+                >
+                  -
+                </button>
+                <span className="mx-2">{item.quantity}</span>
+                <button
+                  onClick={() => updateQuantity(item.id, 1)}
+                  className="px-2 py-1 border rounded"
+                >
+                  +
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
-        <div style={{ marginTop: '20px' }}>
+          ))}
+        </div>
+        <div className="mt-6">
           <strong>ราคารวม: {totalPrice} บาท</strong>
         </div>
-        <button
-          style={{
-            ...buttonStyle,
-            width: '100%',
-            marginTop: '20px',
-            padding: '10px',
-            backgroundColor: '#4CAF50',
-            color: 'white',
-          }}
-        >
+        <button className="w-full mt-4 py-2 bg-green-500 text-white rounded">
           สั่งสินค้า
         </button>
       </div>
     </>
   );
-};
-
-const buttonStyle: React.CSSProperties = {
-  padding: '5px 10px',
-  border: '1px solid #ddd',
-  background: '#f0f0f0',
-  cursor: 'pointer',
 };
 
 export default Cart;
