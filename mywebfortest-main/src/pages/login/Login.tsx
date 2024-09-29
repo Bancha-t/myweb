@@ -1,4 +1,4 @@
-import React, { useState, useEffect, CSSProperties } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 interface FormData {
@@ -16,40 +16,45 @@ interface FormProps {
 }
 
 const Form: React.FC<FormProps> = ({ formData, errors, handleInputChange, handleSubmit, buttonLabel }) => (
-  <form style={styles.form} onSubmit={handleSubmit}>
-    <h1 style={styles.h1}>{buttonLabel === 'เข้าสู่ระบบ' ? 'เข้าสู่ระบบ' : 'สร้างบัญชีใหม่'}</h1>
+  <form className="flex flex-col items-center justify-center h-full px-12 text-center bg-white" onSubmit={handleSubmit}>
+    <h1 className="text-2xl font-thin leading-5 tracking-wider mb-7">
+      {buttonLabel === 'เข้าสู่ระบบ' ? 'เข้าสู่ระบบ' : 'สร้างบัญชีใหม่'}
+    </h1>
     <input
-      style={styles.input}
+      className="w-full px-4 py-3 my-2 bg-gray-100 rounded-md border-none outline-none"
       type="email"
       placeholder="Email"
       name="email"
       value={formData.email}
       onChange={handleInputChange}
     />
-    {errors.email && <span style={styles.error}>{errors.email}</span>}
+    {errors.email && <span className="text-red-500 text-xs mt-1">{errors.email}</span>}
     <input
-      style={styles.input}
+      className="w-full px-4 py-3 my-2 bg-gray-100 rounded-md border-none outline-none"
       type="password"
       placeholder="Password"
       name="password"
       value={formData.password}
       onChange={handleInputChange}
     />
-    {errors.password && <span style={styles.error}>{errors.password}</span>}
+    {errors.password && <span className="text-red-500 text-xs mt-1">{errors.password}</span>}
     {buttonLabel === 'สมัครสมาชิก' && (
       <>
         <input
-          style={styles.input}
+          className="w-full px-4 py-3 my-2 bg-gray-100 rounded-md border-none outline-none"
           type="text"
           placeholder="Name"
           name="name"
           value={formData.name}
           onChange={handleInputChange}
         />
-        {errors.name && <span style={styles.error}>{errors.name}</span>}
+        {errors.name && <span className="text-red-500 text-xs mt-1">{errors.name}</span>}
       </>
     )}
-    <button style={styles.button} type="submit">
+    <button
+      className="px-11 py-3 mt-3 text-white bg-red-500 rounded-full border border-red-500 font-bold text-xs uppercase tracking-wider transition duration-300 ease-in hover:bg-red-600"
+      type="submit"
+    >
       {buttonLabel}
     </button>
   </form>
@@ -137,18 +142,18 @@ const Login: React.FC = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href = '/auth/google';
-  };
-
   return (
-    <div style={styles.body}>
-      {serverError && <div style={styles.error}>{serverError}</div>}
+    <div className="flex flex-col items-center justify-center min-h-screen font-sans my-[10%]">
+      {serverError && <div className="text-red-500 text-sm mb-4">{serverError}</div>}
       {loading ? (
         <div>กำลังโหลด...</div>
       ) : (
-        <div style={styles.container}>
-          <div style={styles.signUp}>
+        <div className="relative w-[1000px] max-w-full min-h-[550px] bg-white rounded-lg overflow-hidden shadow-2xl">
+          <div
+            className={`absolute top-0 left-0 h-full transition-all duration-600 ease-in-out w-1/2 ${
+              isRightPanelActive ? 'opacity-100 z-5 translate-x-full' : 'opacity-0 z-1'
+            }`}
+          >
             <Form
               formData={formData}
               errors={errors}
@@ -157,7 +162,11 @@ const Login: React.FC = () => {
               buttonLabel="สมัครสมาชิก"
             />
           </div>
-          <div style={styles.signIn}>
+          <div
+            className={`absolute top-0 left-0 h-full transition-all duration-600 ease-in-out w-1/2 ${
+              isRightPanelActive ? 'z-1 translate-x-full' : 'z-2'
+            }`}
+          >
             <Form
               formData={formData}
               errors={errors}
@@ -167,23 +176,35 @@ const Login: React.FC = () => {
             />
           </div>
 
-          <div style={styles.overlayContainer}>
-            <div style={styles.overlay}>
-              <div style={{ ...styles.overlayPanel, ...styles.overlayLeft }}>
-                <h1 style={styles.h1}>ยินดีตอนรับกลับนะเพื่อน</h1>
+          <div className="absolute top-0 left-1/2 w-1/2 h-full overflow-hidden transition-transform duration-600 ease-in-out z-100">
+            <div
+              className={`bg-gradient-to-r from-red-500 to-pink-500 text-white relative left-[-100%] h-full w-[200%] ${
+                isRightPanelActive ? 'translate-x-1/2' : 'translate-x-0'
+              } transition-transform duration-600 ease-in-out`}
+            >
+              <div
+                className={`absolute flex flex-col items-center justify-center px-10 text-center top-0 h-full w-1/2 ${
+                  isRightPanelActive ? '-translate-x-[20%]' : ''
+                }`}
+              >
+                <h1 className="text-2xl font-thin leading-5 tracking-wider mb-7">ยินดีตอนรับกลับนะเพื่อน</h1>
                 <p>เข้าสู่ระบบเพื่อเชื่อมต่อกับเรา</p>
                 <button
-                  style={{ ...styles.button, ...styles.ghostButton }}
+                  className="px-11 py-3 mt-3 bg-transparent border border-white rounded-full font-bold text-xs uppercase tracking-wider transition duration-300 ease-in hover:bg-white hover:text-red-500"
                   onClick={() => setIsRightPanelActive(false)}
                 >
                   เข้าสู่ระบบ
                 </button>
               </div>
-              <div style={{ ...styles.overlayPanel, ...styles.overlayRight }}>
-                <h1 style={styles.h1}>สวัสดีเพื่อน</h1>
+              <div
+                className={`absolute flex flex-col items-center justify-center px-10 text-center top-0 right-0 h-full w-1/2 ${
+                  isRightPanelActive ? 'translate-x-0' : ''
+                }`}
+              >
+                <h1 className="text-2xl font-thin leading-5 tracking-wider mb-7">สวัสดีเพื่อน</h1>
                 <p>สมัครสมาชิกและเริ่มการเดินทางกับเรา</p>
                 <button
-                  style={{ ...styles.button, ...styles.ghostButton }}
+                  className="px-11 py-3 mt-3 bg-transparent border border-white rounded-full font-bold text-xs uppercase tracking-wider transition duration-300 ease-in hover:bg-white hover:text-red-500"
                   onClick={() => setIsRightPanelActive(true)}
                 >
                   สร้างบัญชีใหม่
@@ -197,136 +218,4 @@ const Login: React.FC = () => {
   );
 };
 
-const styles: { [key: string]: CSSProperties } = {
-  body: {
-    alignItems: 'center',
-    display: 'flex',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    fontFamily: 'Arial, sans-serif',
-    minHeight: '100%',
-    margin: '10%',
-  },
-  container: {
-    position: 'relative',
-    width: '1000px',
-    maxWidth: '100%',
-    minHeight: '550px',
-    background: '#fff',
-    borderRadius: '10px',
-    overflow: 'hidden',
-    boxShadow: '0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22)',
-  },
-  signUp: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    height: '100%',
-    transition: 'all 0.6s ease-in-out',
-    width: '50%',
-    opacity: isRightPanelActive ? 1 : 0,
-    zIndex: isRightPanelActive ? 5 : 1,
-    transform: isRightPanelActive ? 'translateX(100%)' : 'none',
-  },
-  signIn: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    height: '100%',
-    transition: 'all 0.6s ease-in-out',
-    width: '50%',
-    zIndex: isRightPanelActive ? 1 : 2,
-    transform: isRightPanelActive ? 'translateX(100%)' : 'none',
-  },
-  form: {
-    background: '#fff',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    padding: '0 50px',
-    height: '100%',
-    textAlign: 'center',
-  },
-  h1: {
-    fontSize: '25px',
-    fontWeight: 100,
-    lineHeight: '20px',
-    letterSpacing: '0.5px',
-    margin: '30px 0 30px',
-  },
-  input: {
-    background: '#eee',
-    padding: '12px 15px',
-    margin: '8px 0',
-    width: '100%',
-    borderRadius: '5px',
-    border: 'none',
-    outline: 'none',
-  },
-  button: {
-    borderRadius: '20px',
-    border: '1px solid #FF4B2B',
-    background: '#FF4B2B',
-    color: '#FFFFFF',
-    fontSize: '12px',
-    fontWeight: 'bold',
-    padding: '12px 45px',
-    letterSpacing: '1px',
-    textTransform: 'uppercase',
-    transition: 'transform 80ms ease-in',
-    marginTop: '10px',
-  },
-  ghostButton: {
-    backgroundColor: 'transparent',
-    borderColor: '#FFFFFF',
-  },
-  overlayContainer: {
-    position: 'absolute',
-    top: 0,
-    left: '50%',
-    width: '50%',
-    height: '100%',
-    overflow: 'hidden',
-    transition: 'transform 0.6s ease-in-out',
-    zIndex: 100,
-  },
-  overlay: {
-    background: 'linear-gradient(to right, #FF4B2B, #FF416C)',
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
-    color: '#FFFFFF',
-    position: 'relative',
-    left: '-100%',
-    height: '100%',
-    width: '200%',
-    transform: isRightPanelActive ? 'translateX(50%)' : 'translateX(0)',
-    transition: 'transform 0.6s ease-in-out',
-  },
-  overlayPanel: {
-    position: 'absolute',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '0 40px',
-    textAlign: 'center',
-    top: 0,
-    height: '100%',
-    width: '50%',
-    transform: isRightPanelActive ? 'translateX(50%)' : 'none',
-  },
-  overlayLeft: {
-    transform: 'translateX(-20%)',
-  },
-  overlayRight: {
-    right: 0,
-    transform: 'translateX(0)',
-  },
-  error: {
-    color: 'red',
-    fontSize: '12px',
-    marginTop: '5px',
-  },
-};
-
+export default Login;
