@@ -48,5 +48,3 @@ export default tseslint.config({
   },
 })
 ```
-# mywebfortest
-# mywebfortest
