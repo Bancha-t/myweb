@@ -27,7 +27,7 @@ function AllItemBook() {
 
   const fetchBooks = async () => {
     try {
-      const response = await axios.get(`/api/books?page=${currentPage}&limit=15`);
+      const response = await axios.get(`/books?page=${currentPage}&limit=15`);
       setBooks(response.data.books);
       setTotalPages(response.data.totalPages);
     } catch (error) {

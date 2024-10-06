@@ -25,8 +25,8 @@ const Header: React.FC = () => {
         Ani Meb
       </div>
       <div className="flex gap-6">
-        <div className="text-lg">Home</div>
-        <div className="text-lg">BookAll</div>
+        <div className="text-lg"><Linl to="/#">หน้าหลัก<Link/></div>
+        <div className="text-lg"><Linl to="/AllItemBook">หนังสือทั้งหมด<Link/></div>
       </div>
       <div className="flex items-center gap-3">
         {username ? (
