@@ -3,7 +3,7 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import './index.css'
 
 import Loader from './components/Main/Loader';
-import { CartProvider } from './components/Cart/CartProvider';
+import { CartProvider } from './components/Main/CartProvider';
 
 const Home = lazy(() => import('./page/Home.page'));
 const Login = lazy(() => import('./page/Login.page'));
