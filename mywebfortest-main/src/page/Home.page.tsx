@@ -13,8 +13,8 @@ function Home() {
       <Header />
       <SearchBar />
       <Banner />
-      <BookSection title="หนังสือขายดี" method="best-selling"/>
-      <BookSection title="หนังสือมาใหม่" method="newest"/>
+      <BookSection title="หนังสือขายดี" method="best-selling" />
+      <BookSection title="หนังสือมาใหม่" method="newest" />
     </div>
   );
 }

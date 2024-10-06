@@ -6,10 +6,6 @@ interface Book {
   title: string;
   coverImage: string;
   price: string;
-  description: string;
-  stocksAvailable: number;
-  sold: number;
-  createdAt: string;
   categories: { id: number; name: string }[];
 }
 
@@ -31,16 +27,15 @@ const BookSection: React.FC<BookSectionProps> = ({ title, method }) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/books?method=${method}`);
+      const response = await fetch(`/books?method=${method}`);
       if (!response.ok) {
         throw new Error('Failed to fetch books');
       }
-      const text = await response.text();
-      console.log('Response text:', text);
-      const data = JSON.parse(text);
-      setBooks(data.slice(0, 5));
+      const data = await response.json();
+      setBooks(data.slice(0, 5)); // Only take the first 5 books
     } catch (error) {
       console.error('Error fetching books:', error);
+      setError('Failed to load books. Please try again later.');
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +55,7 @@ const BookSection: React.FC<BookSectionProps> = ({ title, method }) => {
     <div className="p-5">
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-2xl font-semibold">{title}</h2>
-        <Link to={linkTo} className="text-black text-xl hover:underline ">
+        <Link to={linkTo} className="text-black text-xl hover:underline">
           ดูทั้งหมด &gt;
         </Link>
       </div>
