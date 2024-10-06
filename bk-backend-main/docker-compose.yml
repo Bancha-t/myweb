@@ -15,8 +15,8 @@ name: bookStore
 
 services:
   postgres:
-    image: postgres:17
-    container_name: bs-database
+    image: postgres:16-alpine
+    container_name: bk-backend-main
     ports:
       - 5432:5432
     environment:
