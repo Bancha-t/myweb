@@ -9,10 +9,10 @@ const useFetch = <T>(url: string) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem('token'); // ดึง Token จาก localStorage
+        const token = localStorage.getItem('token');
         const response = await axios.get(url, {
           headers: {
-            Authorization: Bearer ${token}, // ใส่ Token ใน header
+            Authorization: Bearer ${token},
           },
         });
         setData(response.data);
