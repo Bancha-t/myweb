@@ -26,7 +26,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const fetchCartItems = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('/api/cart');
+      const response = await axios.get('/cart');
       setCartItems(response.data.items.map((item: any) => ({
         id: item.id,
         name: item.title,
