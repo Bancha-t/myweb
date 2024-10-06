@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ShoppingCart, Bell, Heart, Tally1 } from 'lucide-react';
-import Cart from '../Cart/Cart';
-import { useSearchBooks } from '../../hooks/useSearchBooks';
+import Cart from '../Main/Cart';
+import { useSearchBooks } from '../hooks/useSearchBooks';
 import { useNavigate } from 'react-router-dom';
 
 const SearchBar: React.FC = () => {
