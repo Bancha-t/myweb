@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useCart } from './CartProvider';
+import { useCart } from '../components/Main/CartProvider';
 
 const CheckoutPage = () => {
   const { cartItems } = useCart();

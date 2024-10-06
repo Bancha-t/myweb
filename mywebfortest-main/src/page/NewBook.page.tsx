@@ -5,7 +5,6 @@ import SearchBar from '../components/Main/SearchBar';
 import { useCart } from '../components/Main/CartProvider';
 import Pagination from '../components/Main/Pagination';
 
-import axios from 'axios';
 
 interface Book {
   id: number;

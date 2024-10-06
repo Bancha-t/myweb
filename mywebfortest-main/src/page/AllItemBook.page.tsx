@@ -17,6 +17,8 @@ function AllItemBook() {
   const [books, setBooks] = useState<Book[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -24,12 +26,16 @@ function AllItemBook() {
   }, [currentPage]);
 
   const fetchBooks = async () => {
+    setLoading(true);
+    setError(null); // Reset error before fetching
     try {
       const response = await axios.get(`/books?page=${currentPage}&limit=15`);
       setBooks(response.data.books);
       setTotalPages(response.data.totalPages);
     } catch (error) {
-      console.error('Error fetching books:', error);
+      setError('Error fetching books'); // Set error message
+    } finally {
+      setLoading(false); // Stop loading regardless of success or failure
     }
   };
 
@@ -38,7 +44,7 @@ function AllItemBook() {
       id: book.id,
       name: book.title,
       price: book.price.toString(),
-      quantity: 1
+      quantity: 1,
     });
   };
 
@@ -48,6 +54,9 @@ function AllItemBook() {
       <SearchBar />
       <main className="flex-grow container mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold mb-6">หนังสือมาใหม่</h1>
+        {loading && <div>Loading...</div>}
+        {error && <div className="text-red-500">{error}</div>}
+        {books.length === 0 && !loading && <div>No books available</div>}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {books.map((book) => (
             <div key={book.id} className="flex flex-col">
