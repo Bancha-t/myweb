@@ -1,4 +1,4 @@
-import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCart } from './CartProvider';
 
 interface CartProps {
@@ -19,8 +19,10 @@ const Cart: React.FC<CartProps> = ({ isOpen, toggleCart }) => {
     }
   };
 
+  const navigate = useNavigate();
+
   const handleCheckout = () => {
-    checkout();
+    navigate('/checkout');
     toggleCart();
   };
 
