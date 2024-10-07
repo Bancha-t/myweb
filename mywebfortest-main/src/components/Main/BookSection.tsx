@@ -29,7 +29,7 @@ const BookSection: React.FC<BookSectionProps> = React.memo(({ title, method }) =
           throw new Error('Failed to fetch books');
         }
         const data = await response.json();
-        setBooks(data.slice(0, 5)); // Only take the first 5 books
+        setBooks(data.slice(0, 5));
       } catch (error) {
         console.error('Error fetching books:', error);
         setError('Failed to load books. Please try again later.');
