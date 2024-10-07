@@ -8,10 +8,8 @@ interface CartProps {
 }
 
 const Cart: React.FC<CartProps> = ({ isOpen, toggleCart }) => {
-  const { cartItems, updateCartItem, checkout, loading, error } = useCart();
+  const { cartItems, updateCartItem, loading, totalPrice } = useCart();
   const navigate = useNavigate();
-
-  const totalPrice = cartItems.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
 
   const handleUpdateQuantity = (id: number, change: number) => {
     const item = cartItems.find(item => item.id === id);
@@ -44,18 +42,20 @@ const Cart: React.FC<CartProps> = ({ isOpen, toggleCart }) => {
         
         <div className="flex-grow overflow-y-auto">
           {loading && <p className="p-4">กำลังโหลด...</p>}
-          {error && <p className="p-4 text-red-500">{error}</p>}
           {cartItems.map((item) => (
             <div key={item.id} className="bg-white mb-2 p-4 flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold">{item.name}</h3>
-                <p className="text-gray-600">฿{item.price}</p>
+              <div className="flex items-center">
+                <img src={item.image} alt={item.name} className="w-16 h-16 object-cover mr-4" />
+                <div>
+                  <h3 className="font-semibold">{item.name}</h3>
+                  <p className="text-gray-600">฿{item.price}</p>
+                </div>
               </div>
               <div className="flex items-center">
                 <button
                   onClick={() => handleUpdateQuantity(item.id, -1)}
                   className="w-8 h-8 bg-green-600 text-white rounded-full"
-                  disabled={loading}
+                  disabled={loading || item.quantity <= 1} // ป้องกันไม่ให้ลดจนจำนวนเป็น 0
                 >
                   -
                 </button>

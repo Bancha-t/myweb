@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-interface CartItem {
+export interface CartItem {
   id: number;
   name: string;
   price: string;
@@ -15,7 +15,9 @@ interface CartContextType {
   checkout: () => Promise<void>;
   loading: boolean;
   error: string | null;
-  addToCart: (item: CartItem) => void; // เพิ่ม addToCart ตรงนี้
+  addToCart: (item: CartItem) => void;
+  fetchCartItems: () => Promise<void>;
+  totalPrice: number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -91,8 +93,19 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const totalPrice = cartItems.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
+
   return (
-    <CartContext.Provider value={{ cartItems, updateCartItem, checkout, loading, error, addToCart }}>
+    <CartContext.Provider value={{ 
+      cartItems, 
+      updateCartItem, 
+      checkout, 
+      loading, 
+      error, 
+      addToCart, 
+      fetchCartItems,
+      totalPrice 
+    }}>
       {children}
     </CartContext.Provider>
   );
