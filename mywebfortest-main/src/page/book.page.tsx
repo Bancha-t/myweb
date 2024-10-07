@@ -27,7 +27,8 @@ const BookDetail: React.FC = () => {
     const fetchBook = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`/api/books/${id}`);
+        const response = await axios.get("/api/books/${id}");
+        console.log('Book details API Response:', response.data); // ตรวจสอบข้อมูลที่ได้รับ
         setBook(response.data);
       } catch (error) {
         setError('Error fetching book details');
@@ -41,7 +42,7 @@ const BookDetail: React.FC = () => {
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
-  if (!book) return <div>Book not found</div>;
+  if (!book) return <div>Book not found</div>; // แสดงข้อความเมื่อไม่พบหนังสือ
 
   const handleAddToCart = () => {
     addToCart(book, quantity);

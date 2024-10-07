@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import DOMPurify from 'dompurify';
 
 interface Book {
   id: number;
@@ -17,14 +18,14 @@ interface BookSectionProps {
 const BookSection: React.FC<BookSectionProps> = React.memo(({ title, method }) => {
   const [books, setBooks] = useState<Book[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true); // เพิ่มสถานะการโหลด
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchBooks = async () => {
       setError(null);
-      setLoading(true); // เริ่มการโหลด
+      setLoading(true);
       try {
-        const response = await fetch(`/api/books?method=${method}`);
+        const response = await fetch(`/api/books?method=${encodeURIComponent(method)}`);
         if (!response.ok) {
           throw new Error('Failed to fetch books');
         }
@@ -34,7 +35,7 @@ const BookSection: React.FC<BookSectionProps> = React.memo(({ title, method }) =
         console.error('Error fetching books:', error);
         setError('Failed to load books. Please try again later.');
       } finally {
-        setLoading(false); // จบการโหลด
+        setLoading(false);
       }
     };
 
@@ -54,7 +55,7 @@ const BookSection: React.FC<BookSectionProps> = React.memo(({ title, method }) =
   return (
     <div className="p-5">
       <div className="flex justify-between items-center mb-2">
-        <h2 className="text-2xl font-semibold">{title}</h2>
+        <h2 className="text-2xl font-semibold">{DOMPurify.sanitize(title)}</h2>
         <Link to={linkTo} className="text-black text-xl hover:underline">
           ดูทั้งหมด &gt;
         </Link>
@@ -63,14 +64,14 @@ const BookSection: React.FC<BookSectionProps> = React.memo(({ title, method }) =
         {books.map((book) => (
           <Link 
             key={book.id} 
-            to={`/api/book/${book.id}`} 
-            className="flex flex-col items-center border border-gray-300 p-3 rounded-lg bg-gray-100 shadow-md hover:shadow-lg transition duration-300"
+            to={`/api/book/${encodeURIComponent(book.id)}`} 
+            className="flex flex-col items-center border border-gray-300 p-3 rounded-lg hover:shadow-lg transition duration-300"
           >
-            <img src={book.coverImage} alt={book.title} className="w-36 h-48 object-cover mb-2" />
-            <h3 className="text-md font-bold text-center mb-1 text-gray-800">{book.title}</h3>
-            <p className="text-sm text-gray-600">{book.price} บาท</p>
+            <img src={DOMPurify.sanitize(book.coverImage)} alt={DOMPurify.sanitize(book.title)} className="w-36 h-48 object-cover mb-2" />
+            <h3 className="text-md font-bold text-center mb-1 text-gray-800">{DOMPurify.sanitize(book.title)}</h3>
+            <p className="text-xl font-bold text-gray-600">{DOMPurify.sanitize(book.price)} บาท</p>
             <p className="text-xs text-gray-500 mt-1">
-              {book.categories.map(cat => cat.name).join(', ')}
+              {book.categories.map(cat => DOMPurify.sanitize(cat.name)).join(', ')}
             </p>
           </Link>
         ))}
