@@ -31,6 +31,7 @@ const BookDetail: React.FC = () => {
         console.log('Book details API Response:', response.data); // ตรวจสอบข้อมูลที่ได้รับ
         setBook(response.data);
       } catch (error) {
+        console.error('Error fetching book details:', error); // ดีบัก
         setError('Error fetching book details');
       } finally {
         setLoading(false);

@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import './index.css'
+import BookDetail from './page/book.page';
 
 import Loader from './components/Main/Loader';
 import { CartProvider } from './components/Main/CartProvider';
@@ -12,7 +13,7 @@ const SettingAccounts = lazy(() => import('./page/SettingAccounts.page'));
 const BestSellerBook = lazy(() => import('./page/BestSellerBook.page'));
 const NewBook = lazy(() => import('./page/NewBook.page'));
 const Payment = lazy(() => import('./page/payment.page'));
-const BookDetail = lazy(() => import('./page/book.page'));
+//const BookDetail = lazy(() => import('./page/book.page'));
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -35,7 +36,7 @@ const App: React.FC = () => {
             <Route path="/NewBook" element={<NewBook />} />
             <Route path="/Loader" element={<Loader />} />
             <Route path="/Payment" element={<Payment />} />
-            <Route path="/book/:id" element={<BookDetail />} />
+            <Route path="/api/books/:id" element={<BookDetail />} />
           </Routes>
         </Suspense>
       </div>
