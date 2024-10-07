@@ -11,6 +11,8 @@ const AllItemBook = lazy(() => import('./page/AllItemBook.page'));
 const SettingAccounts = lazy(() => import('./page/SettingAccounts.page'));
 const BestSellerBook = lazy(() => import('./page/BestSellerBook.page'));
 const NewBook = lazy(() => import('./page/NewBook.page'));
+const Payment = lazy(() => import('./page/payment.page'));
+const BookDetail = lazy(() => import('./page/book.page'));
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -32,6 +34,8 @@ const App: React.FC = () => {
             <Route path="/BestSellerBook" element={<BestSellerBook />} />
             <Route path="/NewBook" element={<NewBook />} />
             <Route path="/Loader" element={<Loader />} />
+            <Route path="/Payment" element={<Payment />} />
+            <Route path="/book/:id" element={<BookDetail />} />
           </Routes>
         </Suspense>
       </div>

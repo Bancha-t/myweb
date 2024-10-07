@@ -1,17 +1,53 @@
-import React, { useState } from 'react';
-import { useCart } from '../hooks/useCart';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { useCart } from '../components/hooks/useCart';
 import { Heart } from 'lucide-react';
 
-const BookDetail = ({ book }) => {
-  const { cartItems, addToCart } = useCart();
+interface Book {
+  id: number;
+  title: string;
+  subtitle: string;
+  price: number;
+  coverImage: string;
+  stocksAvailable: number;
+  description: string;
+}
+
+const BookDetail: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const [book, setBook] = useState<Book | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    const fetchBook = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(`/api/books/${id}`);
+        setBook(response.data);
+      } catch (error) {
+        setError('Error fetching book details');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBook();
+  }, [id]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+  if (!book) return <div>Book not found</div>;
 
   const handleAddToCart = () => {
     addToCart(book, quantity);
   };
 
-  const handleQuantityChange = (change) => {
+  const handleQuantityChange = (change: number) => {
     setQuantity(Math.max(1, quantity + change));
   };
 
@@ -78,7 +114,6 @@ const BookDetail = ({ book }) => {
           </div>
         </div>
       </main>
-
       <div className="bg-purple-100 rounded-lg px-10 py-8 mx-auto mb-10 w-[80%]">
         <div className="mb-8">
           <h3 className="text-lg font-bold">ข้อมูลหนังสือ</h3>
@@ -91,23 +126,6 @@ const BookDetail = ({ book }) => {
           <p>{book.description}</p>
         </div>
       </div>
-
-      <section className="text-center my-10">
-        <h2 className="text-xl font-bold mb-6">สินค้าที่เกี่ยวข้อง</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {[...Array(4)].map((_, index) => (
-            <div key={index} className="text-center">
-              <img
-                src={book.coverImage}
-                alt={book.title}
-                className="w-3/5 mx-auto"
-              />
-              <h3 className="mt-2">{book.title}</h3>
-              <p className="text-lg">฿ {book.price.toFixed(2)}</p>
-            </div>
-          ))}
-        </div>
-      </section>
     </div>
   );
 };

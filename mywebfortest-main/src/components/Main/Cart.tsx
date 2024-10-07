@@ -1,3 +1,4 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from './CartProvider';
 
@@ -8,8 +9,8 @@ interface CartProps {
 
 const Cart: React.FC<CartProps> = ({ isOpen, toggleCart }) => {
   const { cartItems, updateCartItem, checkout, loading, error } = useCart();
+  const navigate = useNavigate();
 
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cartItems.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
 
   const handleUpdateQuantity = (id: number, change: number) => {
@@ -18,8 +19,6 @@ const Cart: React.FC<CartProps> = ({ isOpen, toggleCart }) => {
       updateCartItem(id, item.quantity + change);
     }
   };
-
-  const navigate = useNavigate();
 
   const handleCheckout = () => {
     navigate('/checkout');
@@ -30,66 +29,65 @@ const Cart: React.FC<CartProps> = ({ isOpen, toggleCart }) => {
     <>
       {isOpen && (
         <div
-          role="button"
-          aria-label="Close cart"
-          className="fixed inset-0 bg-black bg-opacity-50 z-1000"
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
           onClick={toggleCart}
-        ></div>
+        />
       )}
-      
       <div
-        className={`fixed top-0 right-0 w-96 h-full bg-white transition-transform duration-300 shadow-lg overflow-y-auto z-1001 ${
+        className={`fixed inset-y-0 right-0 w-96 bg-gray-100 shadow-lg transition-transform duration-300 z-50 ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        } flex flex-col`}
       >
-        <button
-          aria-label="Close cart"
-          onClick={toggleCart}
-          className="absolute top-2 right-2 border-none bg-transparent text-xl cursor-pointer"
-        >
-          &times;
-        </button>
-        <h2 className="mb-5 text-xl">สินค้าในตะกร้า ({totalItems} รายการ)</h2>
-        {loading && <p>กำลังโหลด...</p>}
-        {error && <p className="text-red-500">{error}</p>}
-        {cartItems.map((item) => (
-          <div key={item.id} className="mb-4 border-b border-gray-200 pb-4">
-            <h3 className="text-lg">{item.name}</h3>
-            <p className="text-gray-600">ราคา: {item.price} บาท</p>
-            <div className="flex items-center mt-2">
-              <button
-                onClick={() => handleUpdateQuantity(item.id, -1)}
-                className={buttonStyle}
-                disabled={loading}
-              >
-                -
-              </button>
-              <span className="mx-2">{item.quantity}</span>
-              <button
-                onClick={() => handleUpdateQuantity(item.id, 1)}
-                className={buttonStyle}
-                disabled={loading}
-              >
-                +
-              </button>
-            </div>
-          </div>
-        ))}
-        <div className="mt-5">
-          <strong>ราคารวม: {totalPrice.toFixed(2)} บาท</strong>
+        <div className="bg-white p-4 border-b border-gray-200">
+          <h2 className="text-xl font-semibold">สินค้าในตะกร้า ({cartItems.length} รายการ)</h2>
         </div>
-        <button
-          className={`${buttonStyle} w-full mt-5 py-2 bg-green-600 text-white`}
-          onClick={handleCheckout}
-          disabled={loading || cartItems.length === 0}
-        >
-          สั่งสินค้า
-        </button>
+        
+        <div className="flex-grow overflow-y-auto">
+          {loading && <p className="p-4">กำลังโหลด...</p>}
+          {error && <p className="p-4 text-red-500">{error}</p>}
+          {cartItems.map((item) => (
+            <div key={item.id} className="bg-white mb-2 p-4 flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold">{item.name}</h3>
+                <p className="text-gray-600">฿{item.price}</p>
+              </div>
+              <div className="flex items-center">
+                <button
+                  onClick={() => handleUpdateQuantity(item.id, -1)}
+                  className="w-8 h-8 bg-green-600 text-white rounded-full"
+                  disabled={loading}
+                >
+                  -
+                </button>
+                <span className="mx-2">{item.quantity}</span>
+                <button
+                  onClick={() => handleUpdateQuantity(item.id, 1)}
+                  className="w-8 h-8 bg-green-600 text-white rounded-full"
+                  disabled={loading}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div className="bg-white p-4 border-t border-gray-200">
+          <div className="flex justify-between mb-4">
+            <span className="font-semibold">ราคารวม:</span>
+            <span className="font-semibold">฿{totalPrice.toFixed(2)}</span>
+          </div>
+          <button
+            className="w-full py-2 bg-green-600 text-white rounded"
+            onClick={handleCheckout}
+            disabled={loading || cartItems.length === 0}
+          >
+            สั่งสินค้า
+          </button>
+        </div>
       </div>
     </>
   );
 };
-
-const buttonStyle = 'px-3 py-1 border border-gray-300 bg-gray-100 cursor-pointer disabled:opacity-50';
 
 export default Cart;

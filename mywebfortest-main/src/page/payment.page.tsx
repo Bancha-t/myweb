@@ -1,15 +1,29 @@
 import React, { useState } from 'react';
 import { useCart } from '../components/Main/CartProvider';
 
+// Define CartItem type
+interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
 const CheckoutPage = () => {
-  const { cartItems } = useCart();
+  const { cartItems }: { cartItems: CartItem[] } = useCart();
   const [activeSection, setActiveSection] = useState(1);
 
-  const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  // Fix the reduce function type issue
+  const totalPrice = cartItems.reduce(
+    (sum: number, item: CartItem) => sum + Number(item.price) * item.quantity,
+    0
+  );
+  
+  
   const shippingCost = totalPrice >= 500 ? 0 : 50;
   const totalWithShipping = totalPrice + shippingCost;
 
-  const SectionTitle = ({ number, title }) => (
+  const SectionTitle: React.FC<{ number: number; title: string }> = ({ number, title }) => (
     <div className="flex items-center mb-4">
       <div className="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center mr-2">
         <span className="text-purple-800 font-bold">{number}</span>

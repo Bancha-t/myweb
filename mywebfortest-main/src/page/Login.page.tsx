@@ -60,11 +60,12 @@ const Login: React.FC = () => {
       });
   
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error("HTTP error! status: ${response.status}");
       }
   
       const data = await response.json();
-      console.log(data); 
+      localStorage.setItem('token', data.token); // เก็บ token ใน localStorage
+      console.log('Login successful:', data); 
     } catch (error) {
       console.error('Error:', error);
     }
@@ -74,12 +75,16 @@ const Login: React.FC = () => {
     <GoogleOAuthProvider clientId={googleClientId}>
       <div className="flex flex-col items-center justify-center min-h-screen mx-auto my-10 font-sans">
         <div className="relative w-full max-w-screen-md min-h-[550px] bg-white rounded-lg overflow-hidden shadow-[0_14px_28px_rgba(0,0,0,0.25),_0_10px_10px_rgba(0,0,0,0.22)]">
+          {/* Registration Form */}
           <div className={`absolute inset-0 transition-all duration-600 w-1/2 ${isRightPanelActive ? 'opacity-100 z-10 translate-x-full' : 'opacity-0 z-0'}`}>
             <form className="flex flex-col items-center justify-center h-full text-center px-12" onSubmit={handleSubmit}>
               <h1 className="text-2xl font-light tracking-wide mb-8">สร้างบัญชีใหม่</h1>
               <div className="mb-4">
                 <GoogleLogin
-                  onSuccess={(response) => console.log('Google Login Success:', response)}
+                  onSuccess={(response) => {
+                    console.log('Google Login Success:', response);
+                    // เก็บข้อมูลผู้ใช้หรือตั้งค่า context ที่นี่
+                  }}
                   onError={() => console.log('Google Login Failed')}
                   containerProps={{ className: "rounded-full overflow-hidden p-0" }}
                 />
@@ -116,12 +121,17 @@ const Login: React.FC = () => {
               </button>
             </form>
           </div>
+
+          {/* Login Form */}
           <div className={`absolute inset-0 transition-all duration-600 w-1/2 ${isRightPanelActive ? 'opacity-0 z-0' : 'opacity-100 z-10'}`}>
             <form className="flex flex-col items-center justify-center h-full text-center px-12" onSubmit={handleSubmit}>
               <h1 className="text-2xl font-light tracking-wide mb-8">เข้าสู่ระบบ</h1>
               <div className="mb-4">
                 <GoogleLogin
-                  onSuccess={(response) => console.log('Google Login Success:', response)}
+                  onSuccess={(response) => {
+                    console.log('Google Login Success:', response);
+                    // เก็บข้อมูลผู้ใช้หรือตั้งค่า context ที่นี่
+                  }}
                   onError={() => console.log('Google Login Failed')}
                   containerProps={{ className: "rounded-full overflow-hidden p-0" }}
                 />
@@ -150,6 +160,7 @@ const Login: React.FC = () => {
             </form>
           </div>
 
+          {/* Switch Panel */}
           <div className={`absolute top-0 left-1/2 w-full h-full transition-transform duration-600 ${isRightPanelActive ? 'transform -translate-x-full' : ''}`}>
             <div className="absolute inset-0 bg-gradient-to-r from-[#a27eb5] to-[#667848] text-white transform duration-600">
                 <div className="absolute inset-y-0 left-0 w-1/2 flex flex-col items-center justify-center px-10 text-center transition-transform duration-600">

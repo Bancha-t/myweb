@@ -43,7 +43,7 @@ const SearchBar: React.FC = () => {
   };
 
   const handleBookClick = (bookId: number) => {
-    navigate(`/book/${bookId}`);
+    navigate(`api/book/${bookId}`);
     setShowResults(false);
   };
 

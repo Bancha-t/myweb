@@ -8,8 +8,6 @@ import SidebarSetting from '../components/AccountsSetting/SidebarSetting';
 
 import PersonalInfo from '../components/AccountsSetting/PersonalInfo';
 import AddressBook from '../components/AccountsSetting/AddressBook';
-import PurchaseHistory from '../components/AccountsSetting/PurchaseHistory';
-import FavoriteItems from '../components/AccountsSetting/FavoriteItems';
 
 function SettingsMain() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -37,8 +35,6 @@ function SettingsMain() {
           <Routes>
             <Route path="/personal-info" element={<PersonalInfo />} />
             <Route path="/address-book" element={<AddressBook />} />
-            <Route path="/purchase-history" element={<PurchaseHistory />} />
-            <Route path="/favorites" element={<FavoriteItems />} />
           </Routes>
         </div>
       </div>

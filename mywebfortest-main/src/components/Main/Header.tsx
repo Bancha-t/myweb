@@ -21,7 +21,6 @@ const Header: React.FC = () => {
   return (
     <header className="bg-white py-4 px-16 flex justify-between items-center">
       <div className="text-3xl font-bold text-green-800 flex items-center gap-3">
-        <Menu className="w-8 h-auto text-green-800" />
         Ani Meb
       </div>
       <div className="flex gap-6">

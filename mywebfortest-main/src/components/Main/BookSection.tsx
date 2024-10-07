@@ -14,34 +14,34 @@ interface BookSectionProps {
   method: 'newest' | 'best-selling';
 }
 
-const BookSection: React.FC<BookSectionProps> = ({ title, method }) => {
+const BookSection: React.FC<BookSectionProps> = React.memo(({ title, method }) => {
   const [books, setBooks] = useState<Book[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true); // เพิ่มสถานะการโหลด
 
   useEffect(() => {
+    const fetchBooks = async () => {
+      setError(null);
+      setLoading(true); // เริ่มการโหลด
+      try {
+        const response = await fetch(`/api/books?method=${method}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch books');
+        }
+        const data = await response.json();
+        setBooks(data.slice(0, 5)); // Only take the first 5 books
+      } catch (error) {
+        console.error('Error fetching books:', error);
+        setError('Failed to load books. Please try again later.');
+      } finally {
+        setLoading(false); // จบการโหลด
+      }
+    };
+
     fetchBooks();
   }, [method]);
 
-  const fetchBooks = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(`/books?method=${method}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch books');
-      }
-      const data = await response.json();
-      setBooks(data.slice(0, 5)); // Only take the first 5 books
-    } catch (error) {
-      console.error('Error fetching books:', error);
-      setError('Failed to load books. Please try again later.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  if (isLoading) {
+  if (loading) {
     return <div>กำลังโหลด...</div>;
   }
 
@@ -61,18 +61,22 @@ const BookSection: React.FC<BookSectionProps> = ({ title, method }) => {
       </div>
       <div className="grid grid-cols-5 gap-5">
         {books.map((book) => (
-          <div key={book.id} className="flex flex-col items-center border border-gray-300 p-3 rounded-lg bg-gray-100 shadow-md">
+          <Link 
+            key={book.id} 
+            to={`/api/book/${book.id}`} 
+            className="flex flex-col items-center border border-gray-300 p-3 rounded-lg bg-gray-100 shadow-md hover:shadow-lg transition duration-300"
+          >
             <img src={book.coverImage} alt={book.title} className="w-36 h-48 object-cover mb-2" />
             <h3 className="text-md font-bold text-center mb-1 text-gray-800">{book.title}</h3>
             <p className="text-sm text-gray-600">{book.price} บาท</p>
             <p className="text-xs text-gray-500 mt-1">
               {book.categories.map(cat => cat.name).join(', ')}
             </p>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
   );
-};
+});
 
 export default BookSection;
