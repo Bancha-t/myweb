@@ -3,6 +3,7 @@ import { Route, Routes, useLocation, BrowserRouter } from 'react-router-dom';
 import './index.css';
 import BookDetail from './page/book.page';
 import Loader from './components/Main/Loader';
+import NotFound from './components/Main/NotFound';
 import { CartProvider } from './components/Main/CartProvider';
 
 const Home = lazy(() => import('./page/Home.page'));
@@ -12,6 +13,7 @@ const SettingAccounts = lazy(() => import('./page/SettingAccounts.page'));
 const BestSellerBook = lazy(() => import('./page/BestSellerBook.page'));
 const NewBook = lazy(() => import('./page/NewBook.page'));
 const Payment = lazy(() => import('./page/payment.page'));
+const Checkout = lazy(() => import('./page/CheckoutPage.page'));
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -43,7 +45,9 @@ const App: React.FC = () => {
             <Route path="/NewBook" element={<NewBook />} />
             <Route path="/Loader" element={<Loader />} />
             <Route path="/checkout" element={<Payment />} />
-            <Route path="/api/books/:id" element={<BookDetail />} />
+            <Route path="/books/:id" element={<BookDetail />} />
+            <Route path="/Payment" element={<Checkout />} /> 
+            <Route path="*" element={<NotFound />} /> 
           </Routes>
         </Suspense>
       </div>

@@ -7,6 +7,7 @@ export interface CartItem {
   name: string;
   price: string;
   quantity: number;
+  image: string; // เพิ่มโปรเปอร์ตี้ image
 }
 
 interface CartContextType {
@@ -30,13 +31,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchCartItems = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('/cart');
+      const response = await axios.get('/api/cart');
       setCartItems(
         response.data.items.map((item: any) => ({
           id: item.id,
           name: item.title,
           price: item.price,
           quantity: item.amount,
+          image: item.image // ตรวจสอบให้แน่ใจว่าคุณได้ดึงข้อมูลภาพจาก API
         }))
       );
     } catch (err) {
@@ -66,10 +68,16 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const updateCartItem = async (bookId: number, amount: number) => {
+    if (amount === 0) return; // ไม่ทำอะไรหากจำนวนเป็น 0
     setLoading(true);
     try {
-      await axios.post('/api/cart', { bookId, amount });
-      await fetchCartItems();
+      const token = localStorage.getItem('token'); // ดึง Token จาก storage
+      await axios.post('/api/cart', { bookId, amount }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      await fetchCartItems(); // อัปเดตสินค้าหลังจากเพิ่มหรืออัปเดต
       toast.success('Cart updated successfully');
     } catch (err) {
       setError('Failed to update cart item');
@@ -82,8 +90,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const checkout = async () => {
     setLoading(true);
     try {
-      await axios.get('api/cart/checkout');
-      setCartItems([]);
+      const token = localStorage.getItem('token'); // ดึง Token จาก storage
+      await axios.get('/api/cart/checkout', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setCartItems([]); 
       toast.success('Checkout successful');
     } catch (err) {
       setError('Failed to checkout');

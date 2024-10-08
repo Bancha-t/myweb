@@ -1,8 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ShoppingCart, Bell, Heart, Tally1 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Cart from '../Main/Cart';
 import { useSearchBooks } from '../hooks/useSearchBooks';
 import { useNavigate } from 'react-router-dom';
+import debounce from 'lodash/debounce';
+import DOMPurify from 'dompurify';
+
+interface Book {
+  id: number;
+  title: string;
+  coverImage: string;
+  price: string;
+  categories: { id: number; name: string }[];
+}
 
 const SearchBar: React.FC = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -11,18 +22,29 @@ const SearchBar: React.FC = () => {
   const { searchBooks, searchResults, isLoading, error } = useSearchBooks();
   const searchRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const lastSearchRef = useRef<string>('');
 
   const toggleCart = () => setIsCartOpen(!isCartOpen);
 
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      if (query) {
-        searchBooks(query);
+  const debouncedSearch = useCallback(
+    debounce((searchTerm: string) => {
+      if (searchTerm.trim().length >= 1 && searchTerm !== lastSearchRef.current) {
+        searchBooks(searchTerm);
+        setShowResults(true);
+        lastSearchRef.current = searchTerm;
+      } else if (searchTerm.trim().length === 0) {
+        setShowResults(false);
       }
-    }, 300);
+    }, 300),
+    [searchBooks]
+  );
 
-    return () => clearTimeout(delayDebounceFn);
-  }, [query, searchBooks]);
+  useEffect(() => {
+    if (query !== lastSearchRef.current) {
+      debouncedSearch(query);
+    }
+    return () => debouncedSearch.cancel();
+  }, [query, debouncedSearch]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -38,13 +60,11 @@ const SearchBar: React.FC = () => {
   }, []);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
-    setShowResults(true);
-  };
-
-  const handleBookClick = (bookId: number) => {
-    navigate(`api/book/${bookId}`);
-    setShowResults(false);
+    const newQuery = e.target.value;
+    setQuery(newQuery);
+    if (newQuery.trim().length === 0) {
+      setShowResults(false);
+    }
   };
 
   return (
@@ -57,30 +77,30 @@ const SearchBar: React.FC = () => {
             className="w-full p-2 border-none rounded-[20px] text-[16px]"
             value={query}
             onChange={handleSearchChange}
-            onFocus={() => setShowResults(true)}
           />
           {showResults && (
-            <div className="absolute w-full mt-1 bg-white rounded-[10px] shadow-lg z-10 max-h-[400px] overflow-y-auto">
-              {isLoading && <p className="p-2">Loading...</p>}
+            <div className="absolute w-full mt-1 bg-white rounded-[10px] shadow-lg z-10 max-h-[80vh] overflow-y-auto p-5">
+              {isLoading && <p className="p-2">กำลังโหลด...</p>}
               {error && <p className="p-2 text-red-500">Error: {error}</p>}
               {searchResults.length > 0 ? (
-                searchResults.map((book) => (
-                  <div
-                    key={book.id}
-                    className="p-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => handleBookClick(book.id)}
-                  >
-                    <div className="flex items-center">
-                      <img src={book.coverImage} alt={book.title} className="w-10 h-14 object-cover mr-2" />
-                      <div>
-                        <p className="font-semibold">{book.title}</p>
-                        <p className="text-sm text-gray-600">฿{book.price.toFixed(2)}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))
+                <div className="grid grid-cols-5 gap-5">
+                  {searchResults.map((book: Book) => (
+                    <Link 
+                      key={book.id} 
+                      to={`/api/book/${encodeURIComponent(book.id)}`} 
+                      className="flex flex-col items-center p-3 rounded-lg hover:shadow-lg transition duration-300"
+                    >
+                      <img src={DOMPurify.sanitize(book.coverImage)} alt={DOMPurify.sanitize(book.title)} className="w-36 h-48 object-cover mb-2" />
+                      <h3 className="text-md font-bold text-center mb-1 text-gray-800">{DOMPurify.sanitize(book.title)}</h3>
+                      <p className="text-2xl font-bold text-gray-600">{DOMPurify.sanitize(book.price)} บาท</p>
+                      <p className="text-xl text-gray-500 mt-1">
+                        {book.categories.map(cat => DOMPurify.sanitize(cat.name)).join(', ')}
+                      </p>
+                    </Link>
+                  ))}
+                </div>
               ) : (
-                query && !isLoading && <p className="p-2">No results found</p>
+                query.trim().length > 0 && !isLoading && <p className="p-2">ไม่พบผลลัพธ์</p>
               )}
             </div>
           )}

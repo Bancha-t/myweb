@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from './CartProvider';
+import DOMPurify from 'dompurify';
 
 interface CartProps {
   isOpen: boolean;
@@ -42,24 +43,30 @@ const Cart: React.FC<CartProps> = ({ isOpen, toggleCart }) => {
         
         <div className="flex-grow overflow-y-auto">
           {loading && <p className="p-4">กำลังโหลด...</p>}
+          {!loading && cartItems.length === 0 && <p className="p-4">ไม่มีสินค้าในตะกร้า</p>}
           {cartItems.map((item) => (
             <div key={item.id} className="bg-white mb-2 p-4 flex items-center justify-between">
               <div className="flex items-center">
-                <img src={item.image} alt={item.name} className="w-16 h-16 object-cover mr-4" />
+                <img 
+                  src={DOMPurify.sanitize(item.image) || '../../assets/HD-wallpaper-loadnig-cat-meme-loading-cat-meme-cat-thumbnail'} 
+                  alt={DOMPurify.sanitize(item.name)} 
+                  className="w-16 h-16 object-cover mr-4" 
+                  onError={(e) => (e.currentTarget.src = 'path/to/placeholder-image.jpg')} 
+                />
                 <div>
-                  <h3 className="font-semibold">{item.name}</h3>
-                  <p className="text-gray-600">฿{item.price}</p>
+                  <h3 className="font-semibold">{DOMPurify.sanitize(item.name)}</h3>
+                  <p className="text-gray-600">฿{DOMPurify.sanitize(item.price)}</p>
                 </div>
               </div>
               <div className="flex items-center">
                 <button
                   onClick={() => handleUpdateQuantity(item.id, -1)}
                   className="w-8 h-8 bg-green-600 text-white rounded-full"
-                  disabled={loading || item.quantity <= 1} // ป้องกันไม่ให้ลดจนจำนวนเป็น 0
+                  disabled={loading || item.quantity <= 1}
                 >
                   -
                 </button>
-                <span className="mx-2">{item.quantity}</span>
+                <span className="mx-2">{DOMPurify.sanitize(item.quantity.toString())}</span>
                 <button
                   onClick={() => handleUpdateQuantity(item.id, 1)}
                   className="w-8 h-8 bg-green-600 text-white rounded-full"

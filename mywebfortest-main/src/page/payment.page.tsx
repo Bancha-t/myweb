@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 import { useCart } from '../components/Main/CartProvider';
-import iconqrcode from '../assets/icon-thaiqr.png'
+import { useNavigate } from 'react-router-dom'; // นำเข้า useNavigate
+import iconqrcode from '../assets/icon-thaiqr.png';
 
 const CheckoutPage = () => {
   const { cartItems } = useCart();
   const [activeSections, setActiveSections] = useState<boolean[]>([false, false, false]);
+  const [contactInfo, setContactInfo] = useState({ name: '', email: '', phone: '' });
+  const [shippingInfo, setShippingInfo] = useState({ address: '', postalCode: '', district: '', receiverName: '', receiverPhone: '' });
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [formErrors, setFormErrors] = useState({ contact: '', shipping: '', payment: '' }); // เก็บข้อมูลข้อผิดพลาด
+  const navigate = useNavigate(); // สร้างฟังก์ชัน navigate
 
   const totalPrice = cartItems.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
   const shippingCost = totalPrice >= 500 ? 0 : 50;
@@ -28,7 +34,7 @@ const CheckoutPage = () => {
   const CartSummary = () => (
     <div className="bg-gray-100 p-4 rounded-lg sticky top-4 w-4/5 mx-auto">
       <h2 className="text-xl font-semibold mb-4">รายการสินค้า ({cartItems.length} รายการ)</h2>
-      <div className="flex-grow overflow-y-auto max-h-96"> {/* ปรับ max-h ตามที่ต้องการ */}
+      <div className="flex-grow overflow-y-auto max-h-96"> 
         {cartItems.map((item) => (
           <div key={item.id} className="flex items-center mb-4">
             <img src={`/api/placeholder/64/96`} alt={item.name} className="w-16 h-24 object-cover mr-4" />
@@ -56,9 +62,33 @@ const CheckoutPage = () => {
       </div>
     </div>
   );
-  
-  
-  
+
+  const handleOrderSubmission = () => {
+    // ตรวจสอบว่าข้อมูลทุกช่องกรอกครบถ้วน
+    const isContactInfoComplete = contactInfo.name && contactInfo.email && contactInfo.phone;
+    const isShippingInfoComplete = shippingInfo.address && shippingInfo.postalCode && shippingInfo.district && shippingInfo.receiverName && shippingInfo.receiverPhone;
+    const isPaymentMethodSelected = paymentMethod !== '';
+
+    const newFormErrors = { contact: '', shipping: '', payment: '' };
+
+    if (!isContactInfoComplete) {
+      newFormErrors.contact = 'กรุณากรอกข้อมูลการติดต่อให้ครบถ้วน';
+    }
+
+    if (!isShippingInfoComplete) {
+      newFormErrors.shipping = 'กรุณากรอกข้อมูลการจัดส่งให้ครบถ้วน';
+    }
+
+    if (!isPaymentMethodSelected) {
+      newFormErrors.payment = 'กรุณาเลือกวิธีการชำระเงิน';
+    }
+
+    setFormErrors(newFormErrors); // อัปเดตข้อผิดพลาดในฟอร์ม
+
+    if (isContactInfoComplete && isShippingInfoComplete && isPaymentMethodSelected) {
+      navigate('/Payment'); // นำทางไปที่ /Payment
+    }
+  };
 
   return (
     <div className="flex flex-col md:flex-row p-4 max-w-6xl mx-auto">
@@ -70,9 +100,32 @@ const CheckoutPage = () => {
           <SectionTitle number={1} title="การติดต่อ" index={0} />
           {activeSections[0] && (
             <div className="space-y-2">
-              <input type="text" placeholder="ชื่อ-นามสกุล" className="w-full p-2 border rounded" />
-              <input type="email" placeholder="อีเมล" className="w-full p-2 border rounded" />
-              <input type="tel" placeholder="เบอร์โทรศัพท์" className="w-full p-2 border rounded" />
+              <input
+                type="text"
+                placeholder="ชื่อ-นามสกุล"
+                className="w-full p-2 border rounded"
+                value={contactInfo.name}
+                onChange={(e) => setContactInfo({ ...contactInfo, name: e.target.value })}
+              />
+              {formErrors.contact && <p className="text-red-500">{formErrors.contact}</p>} {/* ข้อความเตือน */}
+
+              <input
+                type="email"
+                placeholder="อีเมล"
+                className="w-full p-2 border rounded"
+                value={contactInfo.email}
+                onChange={(e) => setContactInfo({ ...contactInfo, email: e.target.value })}
+              />
+              {formErrors.contact && <p className="text-red-500">{formErrors.contact}</p>} {/* ข้อความเตือน */}
+
+              <input
+                type="tel"
+                placeholder="เบอร์โทรศัพท์"
+                className="w-full p-2 border rounded"
+                value={contactInfo.phone}
+                onChange={(e) => setContactInfo({ ...contactInfo, phone: e.target.value })}
+              />
+              {formErrors.contact && <p className="text-red-500">{formErrors.contact}</p>} {/* ข้อความเตือน */}
             </div>
           )}
         </div>
@@ -83,19 +136,53 @@ const CheckoutPage = () => {
           {activeSections[1] && (
             <>
               <div className="space-y-2">
-                <input type="text" placeholder="เลขที่ อาคาร ถนน ซอย และรายละเอียดอื่นๆ" className="w-full p-2 border rounded" />
-                <input type="text" placeholder="รหัสไปรษณีย์" className="w-full p-2 border rounded" />
-                <input type="text" placeholder="ตำบล อำเภอ จังหวัด" className="w-full p-2 border rounded" />
-                <input type="text" placeholder="ชื่อผู้รับ" className="w-full p-2 border rounded" />
-                <input type="text" placeholder="เบอร์โทรศัพท์ผู้รับ" className="w-full p-2 border rounded" />
+                <input
+                  type="text"
+                  placeholder="เลขที่ อาคาร ถนน ซอย และรายละเอียดอื่นๆ"
+                  className="w-full p-2 border rounded"
+                  value={shippingInfo.address}
+                  onChange={(e) => setShippingInfo({ ...shippingInfo, address: e.target.value })}
+                />
+                {formErrors.shipping && <p className="text-red-500">{formErrors.shipping}</p>} {/* ข้อความเตือน */}
+
+                <input
+                  type="text"
+                  placeholder="รหัสไปรษณีย์"
+                  className="w-full p-2 border rounded"
+                  value={shippingInfo.postalCode}
+                  onChange={(e) => setShippingInfo({ ...shippingInfo, postalCode: e.target.value })}
+                />
+                {formErrors.shipping && <p className="text-red-500">{formErrors.shipping}</p>} {/* ข้อความเตือน */}
+
+                <input
+                  type="text"
+                  placeholder="ตำบล อำเภอ จังหวัด"
+                  className="w-full p-2 border rounded"
+                  value={shippingInfo.district}
+                  onChange={(e) => setShippingInfo({ ...shippingInfo, district: e.target.value })}
+                />
+                {formErrors.shipping && <p className="text-red-500">{formErrors.shipping}</p>} {/* ข้อความเตือน */}
+
+                <input
+                  type="text"
+                  placeholder="ชื่อผู้รับ"
+                  className="w-full p-2 border rounded"
+                  value={shippingInfo.receiverName}
+                  onChange={(e) => setShippingInfo({ ...shippingInfo, receiverName: e.target.value })}
+                />
+                {formErrors.shipping && <p className="text-red-500">{formErrors.shipping}</p>} {/* ข้อความเตือน */}
+
+                <input
+                  type="text"
+                  placeholder="เบอร์โทรศัพท์ผู้รับ"
+                  className="w-full p-2 border rounded"
+                  value={shippingInfo.receiverPhone}
+                  onChange={(e) => setShippingInfo({ ...shippingInfo, receiverPhone: e.target.value })}
+                />
+                {formErrors.shipping && <p className="text-red-500">{formErrors.shipping}</p>} {/* ข้อความเตือน */}
               </div>
               <div className="mt-4">
-                <h3 className="font-semibold mb-2">เลือกวิธีการจัดส่ง</h3>
-                <div className="flex items-center">
-                  <input type="radio" id="shipping-method" name="shipping-method" className="mr-2" checked readOnly />
-                  <label htmlFor="shipping-method">ไปรษณีย์ด่วนพิเศษ ธรรมดา 500 บาทขึ้นไฟรี / ไม่ถึง 500 บาทค่าส่ง 50 บาท</label>
-                </div>
-                
+                <h3 className="text-lg font-semibold">ค่าจัดส่ง: ฿ {shippingCost.toFixed(2)}</h3>
               </div>
             </>
           )}
@@ -106,18 +193,25 @@ const CheckoutPage = () => {
           <SectionTitle number={3} title="การชำระเงิน" index={2} />
           {activeSections[2] && (
             <div className="flex items-center">
-              <input type="radio" id="payment-method" name="payment-method" className="mr-2" checked readOnly />
+              <input
+                type="radio"
+                id="payment-method"
+                name="payment-method"
+                className="mr-2"
+                checked
+                readOnly
+                onClick={() => setPaymentMethod('promptpay')}
+              />
               <label htmlFor="payment-method" className="flex items-center">
-              <img src={iconqrcode} alt="iconqrcode" className="h-8 mr-2" />
+                <img src={iconqrcode} alt="iconqrcode" className="h-8 mr-2" />
                 QR Code PromptPay
               </label>
             </div>
           )}
         </div>
-
-        <button 
-          className="w-full bg-green-500 text-white py-2 rounded mt-4"
-          onClick={() => {/* Handle order submission */}}
+        <button
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+          onClick={handleOrderSubmission}
         >
           ยืนยันการสั่งซื้อ
         </button>
