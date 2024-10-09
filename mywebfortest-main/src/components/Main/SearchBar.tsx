@@ -69,48 +69,56 @@ const SearchBar: React.FC = () => {
 
   return (
     <>
-      <div className="bg-[#E2C9EF] p-3 flex justify-center items-center gap-[35vw]">
-        <div className="relative w-[50%]" ref={searchRef}>
+      <div className="bg-[#E2C9EF] p-3 flex flex-col md:flex-row justify-center md:justify-between items-center gap-4 md:gap-[35vw]">
+        <div className="relative w-full md:w-[50%]" ref={searchRef}>
           <input
             type="text"
             placeholder="Search..."
-            className="w-full p-2 border-none rounded-[20px] text-[16px]"
+            className="w-full p-2 border-none rounded-[20px] text-[14px]"
             value={query}
             onChange={handleSearchChange}
           />
           {showResults && (
-            <div className="absolute w-full mt-1 bg-white rounded-[10px] shadow-lg z-10 max-h-[80vh] overflow-y-auto p-5">
-              {isLoading && <p className="p-2">กำลังโหลด...</p>}
-              {error && <p className="p-2 text-red-500">Error: {error}</p>}
+            <div className="absolute w-full mt-1 bg-white rounded-[10px] shadow-lg z-10 max-h-[80vh] overflow-y-auto p-2">
+              {isLoading && <p className="p-1">กำลังโหลด...</p>}
+              {error && <p className="p-1 text-red-500">Error: {error}</p>}
               {searchResults.length > 0 ? (
-                <div className="grid grid-cols-5 gap-5">
+                <div className="flex flex-col gap-2">
                   {searchResults.map((book: Book) => (
                     <Link 
                       key={book.id} 
                       to={`/api/book/${encodeURIComponent(book.id)}`} 
-                      className="flex flex-col items-center p-3 rounded-lg hover:shadow-lg transition duration-300"
+                      className="flex p-1 rounded-lg bg-white shadow-md hover:shadow-lg transition duration-300"
                     >
-                      <img src={DOMPurify.sanitize(book.coverImage)} alt={DOMPurify.sanitize(book.title)} className="w-36 h-48 object-cover mb-2" />
-                      <h3 className="text-md font-bold text-center mb-1 text-gray-800">{DOMPurify.sanitize(book.title)}</h3>
-                      <p className="text-2xl font-bold text-gray-600">{DOMPurify.sanitize(book.price)} บาท</p>
-                      <p className="text-xl text-gray-500 mt-1">
-                        {book.categories.map(cat => DOMPurify.sanitize(cat.name)).join(', ')}
-                      </p>
+                      <div className="flex-none w-16 h-24 md:w-20 md:h-30 mr-2">
+                        <img 
+                          src={DOMPurify.sanitize(book.coverImage)} 
+                          alt={DOMPurify.sanitize(book.title)} 
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                      </div>
+                      <div className="flex flex-col justify-center">
+                        <h3 className="text-xs font-bold text-gray-800">{DOMPurify.sanitize(book.title)}</h3>
+                        <p className="text-xs font-bold text-gray-600">{DOMPurify.sanitize(book.price)} บาท</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {book.categories.map(cat => DOMPurify.sanitize(cat.name)).join(', ')}
+                        </p>
+                      </div>
                     </Link>
                   ))}
                 </div>
               ) : (
-                query.trim().length > 0 && !isLoading && <p className="p-2">ไม่พบผลลัพธ์</p>
+                query.trim().length > 0 && !isLoading && <p className="p-1">ไม่พบผลลัพธ์</p>
               )}
             </div>
           )}
         </div>
         <div className="flex gap-2 p-2">
-          <Bell className="w-[30px] h-auto text-[rgb(44,82,52)]" />
-          <Heart className="w-[30px] h-auto text-[rgb(44,82,52)]" />
-          <Tally1 className="w-[30px] h-auto text-[rgb(44,82,52)]" />
+          <Bell className="w-5 h-5 md:w-[25px] md:h-auto text-[rgb(44,82,52)]" />
+          <Heart className="w-5 h-5 md:w-[25px] md:h-auto text-[rgb(44,82,52)]" />
+          <Tally1 className="w-5 h-5 md:w-[25px] md:h-auto text-[rgb(44,82,52)]" />
           <ShoppingCart
-            className="w-[30px] h-auto text-[rgb(44,82,52)] cursor-pointer"
+            className="w-5 h-5 md:w-[25px] md:h-auto text-[rgb(44,82,52)] cursor-pointer"
             onClick={toggleCart}
           />
         </div>

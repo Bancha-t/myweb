@@ -21,7 +21,7 @@ const BookSection: React.FC<BookSectionProps> = React.memo(({ title, method }) =
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchBooks = async () => {
+    const fetchBooks = async () => {  
       setError(null);
       setLoading(true);
       try {
@@ -60,17 +60,17 @@ const BookSection: React.FC<BookSectionProps> = React.memo(({ title, method }) =
           ดูทั้งหมด &gt;
         </Link>
       </div>
-      <div className="grid grid-cols-5 gap-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
         {books.map((book) => (
           <Link 
             key={book.id} 
             to={`/api/book/${encodeURIComponent(book.id)}`} 
             className="flex flex-col items-center p-3 rounded-lg hover:shadow-lg transition duration-300"
           >
-            <img src={DOMPurify.sanitize(book.coverImage)} alt={DOMPurify.sanitize(book.title)} className="w-36 h-48 object-cover mb-2" />
-            <h3 className="text-md font-bold text-center mb-1 text-gray-800">{DOMPurify.sanitize(book.title)}</h3>
-            <p className="text-2xl font-bold text-gray-600">{DOMPurify.sanitize(book.price)} บาท</p>
-            <p className="text-xl text-gray-500 mt-1">
+            <img src={DOMPurify.sanitize(book.coverImage)} alt={DOMPurify.sanitize(book.title)} className="w-32 h-40 object-cover mb-2" />
+            <h3 className="text-lg font-bold text-center mb-1 text-gray-800">{DOMPurify.sanitize(book.title)}</h3>
+            <p className="text-xl font-bold text-gray-600">{DOMPurify.sanitize(book.price)} บาท</p>
+            <p className="text-lg text-gray-500 mt-1">
               {book.categories.map(cat => DOMPurify.sanitize(cat.name)).join(', ')}
             </p>
           </Link>

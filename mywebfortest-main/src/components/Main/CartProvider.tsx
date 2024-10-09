@@ -1,18 +1,19 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { debounce } from 'lodash'; // Make sure to install lodash if not already installed
 
 export interface CartItem {
   id: number;
   name: string;
   price: string;
   quantity: number;
-  image: string; // เพิ่มโปรเปอร์ตี้ image
+  image: string;
 }
 
 interface CartContextType {
   cartItems: CartItem[];
-  updateCartItem: (bookId: number, amount: number) => Promise<void>;
+  updateCartItem: (bookId: number, amount: number) => void;
   checkout: () => Promise<void>;
   loading: boolean;
   error: string | null;
@@ -28,7 +29,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchCartItems = async () => {
+  const fetchCartItems = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axios.get('/api/cart');
@@ -38,7 +39,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           name: item.title,
           price: item.price,
           quantity: item.amount,
-          image: item.image // ตรวจสอบให้แน่ใจว่าคุณได้ดึงข้อมูลภาพจาก API
+          image: item.image
         }))
       );
     } catch (err) {
@@ -47,13 +48,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchCartItems();
-  }, []);
+  }, [fetchCartItems]);
 
-  const addToCart = (item: CartItem) => {
+  const addToCart = useCallback((item: CartItem) => {
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((i) => i.id === item.id);
       if (existingItem) {
@@ -65,38 +66,47 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     });
     toast.success(`${item.name} added to cart`);
-  };
+  }, []);
 
-  const updateCartItem = async (bookId: number, amount: number) => {
-    if (amount === 0) return; // ไม่ทำอะไรหากจำนวนเป็น 0
+  const debouncedUpdateCart = useCallback(
+    debounce(async (bookId: number, amount: number) => {
+      try {
+        const token = localStorage.getItem('token');
+        await axios.post('/api/cart', { bookId, amount }, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        await fetchCartItems();
+        toast.success('Cart updated successfully');
+      } catch (err) {
+        setError('Failed to update cart item');
+        toast.error('Failed to update cart item');
+      }
+    }, 500),
+    [fetchCartItems]
+  );
+
+  const updateCartItem = useCallback((bookId: number, amount: number) => {
+    if (amount === 0) return;
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === bookId ? { ...item, quantity: amount } : item
+      )
+    );
+    debouncedUpdateCart(bookId, amount);
+  }, [debouncedUpdateCart]);
+
+  const checkout = useCallback(async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token'); // ดึง Token จาก storage
-      await axios.post('/api/cart', { bookId, amount }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      await fetchCartItems(); // อัปเดตสินค้าหลังจากเพิ่มหรืออัปเดต
-      toast.success('Cart updated successfully');
-    } catch (err) {
-      setError('Failed to update cart item');
-      toast.error('Failed to update cart item');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const checkout = async () => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem('token'); // ดึง Token จาก storage
+      const token = localStorage.getItem('token');
       await axios.get('/api/cart/checkout', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      setCartItems([]); 
+      setCartItems([]);
       toast.success('Checkout successful');
     } catch (err) {
       setError('Failed to checkout');
@@ -104,20 +114,20 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const totalPrice = cartItems.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ 
-      cartItems, 
-      updateCartItem, 
-      checkout, 
-      loading, 
-      error, 
-      addToCart, 
+    <CartContext.Provider value={{
+      cartItems,
+      updateCartItem,
+      checkout,
+      loading,
+      error,
+      addToCart,
       fetchCartItems,
-      totalPrice 
+      totalPrice
     }}>
       {children}
     </CartContext.Provider>

@@ -22,6 +22,7 @@ function AllItemBook() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [error, setError] = useState<string | null>(null);
+  const itemsPerPage = 15; // จำกัดจำนวนหนังสือในแต่ละหน้า
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -31,11 +32,11 @@ function AllItemBook() {
   const fetchBooks = async () => {
     setError(null);
     try {
-      const response = await axios.get(`/api/books?method=newest&page=${currentPage}&limit=15`);
+      const response = await axios.get(`/api/books?method=newest&page=${currentPage}&limit=${itemsPerPage}`);
       console.log('API Response:', response.data);
       if (Array.isArray(response.data) && response.data.length > 0) {
         setBooks(response.data);
-        setTotalPages(Math.ceil(response.data.length / 15));
+        setTotalPages(Math.ceil(response.data.length / itemsPerPage));
       } else {
         throw new Error('Invalid response structure');
       }
@@ -68,7 +69,7 @@ function AllItemBook() {
       <main className="flex-grow container mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold mb-6">หนังสือทั้งหมด</h1>
         {books.length === 0 && <div>No books available</div>}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
           {books.map((book) => (
             <Link
               key={book.id}

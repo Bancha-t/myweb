@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useCart } from '../components/Main/CartProvider';
-import { useNavigate } from 'react-router-dom'; // นำเข้า useNavigate
+import { useNavigate } from 'react-router-dom';
 import iconqrcode from '../assets/icon-thaiqr.png';
+import slipImage from '../assets/qrcode.jpg';
 
 const CheckoutPage = () => {
   const { cartItems } = useCart();
@@ -9,8 +10,12 @@ const CheckoutPage = () => {
   const [contactInfo, setContactInfo] = useState({ name: '', email: '', phone: '' });
   const [shippingInfo, setShippingInfo] = useState({ address: '', postalCode: '', district: '', receiverName: '', receiverPhone: '' });
   const [paymentMethod, setPaymentMethod] = useState('');
-  const [formErrors, setFormErrors] = useState({ contact: '', shipping: '', payment: '' }); // เก็บข้อมูลข้อผิดพลาด
-  const navigate = useNavigate(); // สร้างฟังก์ชัน navigate
+  const [formErrors, setFormErrors] = useState({ contact: '', shipping: '', payment: '' });
+  const navigate = useNavigate();
+
+  const [showPaymentOverlay, setShowPaymentOverlay] = useState(false);
+  const [slip, setSlip] = useState<File | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const totalPrice = cartItems.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
   const shippingCost = totalPrice >= 500 ? 0 : 50;
@@ -24,7 +29,7 @@ const CheckoutPage = () => {
       <h2 className="text-xl font-semibold">{title}</h2>
     </div>
   );
-
+  
   const toggleSection = (index) => {
     const updatedSections = [...activeSections];
     updatedSections[index] = !updatedSections[index];
@@ -64,7 +69,6 @@ const CheckoutPage = () => {
   );
 
   const handleOrderSubmission = () => {
-    // ตรวจสอบว่าข้อมูลทุกช่องกรอกครบถ้วน
     const isContactInfoComplete = contactInfo.name && contactInfo.email && contactInfo.phone;
     const isShippingInfoComplete = shippingInfo.address && shippingInfo.postalCode && shippingInfo.district && shippingInfo.receiverName && shippingInfo.receiverPhone;
     const isPaymentMethodSelected = paymentMethod !== '';
@@ -74,21 +78,83 @@ const CheckoutPage = () => {
     if (!isContactInfoComplete) {
       newFormErrors.contact = 'กรุณากรอกข้อมูลการติดต่อให้ครบถ้วน';
     }
-
     if (!isShippingInfoComplete) {
       newFormErrors.shipping = 'กรุณากรอกข้อมูลการจัดส่งให้ครบถ้วน';
     }
-
     if (!isPaymentMethodSelected) {
       newFormErrors.payment = 'กรุณาเลือกวิธีการชำระเงิน';
     }
 
-    setFormErrors(newFormErrors); // อัปเดตข้อผิดพลาดในฟอร์ม
+    setFormErrors(newFormErrors);
 
     if (isContactInfoComplete && isShippingInfoComplete && isPaymentMethodSelected) {
-      navigate('/Payment'); // นำทางไปที่ /Payment
+      setShowPaymentOverlay(true);
     }
   };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      setSlip(event.target.files[0]);
+    }
+  };
+
+  const handlePaymentSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (slip) {
+      setShowConfirmation(true);
+      setTimeout(() => {
+        setShowConfirmation(false);
+        setShowPaymentOverlay(false);
+        navigate('/#');
+      }, 3000);
+    }
+  };
+
+  const PaymentOverlay = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-5/6 max-w-md relative">
+        <button
+          className="absolute top-2 right-2 text-gray-500"
+          onClick={() => setShowPaymentOverlay(false)}
+        >
+          ✖
+        </button>
+        <h2 className="text-2xl font-bold mb-4">ชำระเงิน</h2>
+        <img src={slipImage} alt="QR Code" className="w-full mb-4" />
+        <form onSubmit={handlePaymentSubmit} className="space-y-4">
+          <div>
+            <label className="block mb-2 text-gray-700">อัปโหลดสลิปการชำระเงิน:</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="border border-gray-300 rounded p-2 w-full"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className={`w-full py-2 rounded transition duration-200 ${
+              slip ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-red-500 text-white cursor-not-allowed'
+            }`}
+            disabled={!slip}
+          >
+            ส่ง
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+  
+
+  const ConfirmationOverlay = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold mb-4">ยืนยันคำสั่งซื้อเรียบร้อย</h2>
+        <p>กำลังนำคุณกลับไปยังหน้าหลัก...</p>
+      </div>
+    </div>
+  );
 
   return (
     <div className="flex flex-col md:flex-row p-4 max-w-6xl mx-auto">
@@ -136,7 +202,7 @@ const CheckoutPage = () => {
           {activeSections[1] && (
             <>
               <div className="space-y-2">
-                <input
+              <input
                   type="text"
                   placeholder="เลขที่ อาคาร ถนน ซอย และรายละเอียดอื่นๆ"
                   className="w-full p-2 border rounded"
@@ -210,7 +276,7 @@ const CheckoutPage = () => {
           )}
         </div>
         <button
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition items-center"
           onClick={handleOrderSubmission}
         >
           ยืนยันการสั่งซื้อ
@@ -220,6 +286,9 @@ const CheckoutPage = () => {
       <div className="w-full md:w-1/3">
         <CartSummary />
       </div>
+
+      {showPaymentOverlay && <PaymentOverlay />}
+      {showConfirmation && <ConfirmationOverlay />}
     </div>
   );
 };
