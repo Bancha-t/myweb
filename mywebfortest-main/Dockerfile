@@ -4,6 +4,6 @@ COPY . .
 RUN npm ci
 RUN npm run build
 
-FROM nginx:1.27.0-alpine AS production
+FROM nginx:1.27.2-alpine AS production
 COPY ./nginx.conf.template /etc/nginx/templates/nginx.conf.template
 COPY --from=builder /app/dist /usr/share/nginx/html
